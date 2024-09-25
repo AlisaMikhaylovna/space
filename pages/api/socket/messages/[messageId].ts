@@ -2,7 +2,7 @@ import { NextApiRequest } from "next";
 import { MemberRole } from "@prisma/client";
 
 import { NextApiResponseServerIo } from "@/types";
-import { currentUserPages } from "@/lib/current-user-pages";
+import { currentUser } from "@/lib/current-user";
 import { db } from "@/lib/db";
 
 export default async function handler(
@@ -14,7 +14,7 @@ export default async function handler(
   }
 
   try {
-    const user = await currentUserPages(req);
+    const user = await currentUser();
     const { messageId, serverId, channelId } = req.query;
     const { content } = req.body;
 

@@ -1,7 +1,7 @@
 import { NextApiRequest } from "next";
 
 import { NextApiResponseServerIo } from "@/types";
-import { currentUserPages } from "@/lib/current-user-pages";
+import { currentUser } from "@/lib/current-user";
 import { db } from "@/lib/db";
 
 export default async function handler(
@@ -13,18 +13,18 @@ export default async function handler(
   }
 
   try {
-    const user = await currentUserPages(req);
+    const user = await currentUser();
     const { content, fileUrl } = req.body;
     const { conversationId } = req.query;
-    
+
     if (!user) {
       return res.status(401).json({ error: "Unauthorized" });
-    }    
-  
+    }
+
     if (!conversationId) {
       return res.status(400).json({ error: "Conversation ID missing" });
     }
-          
+
     if (!content) {
       return res.status(400).json({ error: "Content missing" });
     }
@@ -93,6 +93,6 @@ export default async function handler(
     return res.status(200).json(message);
   } catch (error) {
     console.log("[DIRECT_MESSAGES_POST]", error);
-    return res.status(500).json({ message: "Internal Error" }); 
+    return res.status(500).json({ message: "Internal Error" });
   }
 }

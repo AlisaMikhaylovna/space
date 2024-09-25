@@ -1,7 +1,7 @@
 import { NextApiRequest } from "next";
 
 import { NextApiResponseServerIo } from "@/types";
-import { currentUserPages } from "@/lib/current-user-pages";
+import { currentUser } from "@/lib/current-user";
 import { db } from "@/lib/db";
 
 export default async function handler(
@@ -13,7 +13,7 @@ export default async function handler(
     }
 
     try {
-        const user = await currentUserPages(req);
+        const user = await currentUser();
         const { content, fileUrl } = req.body;
         const { serverId, channelId } = req.query;
 

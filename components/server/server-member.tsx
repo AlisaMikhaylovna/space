@@ -40,7 +40,7 @@ export const ServerMember = ({
       )}
     >
       <UserAvatar
-        src={member.user.image!}
+        user={{ name: member.user.name || null, image: member.user.image || null }}
         className="h-8 w-8 md:h-8 md:w-8"
       />
       <p

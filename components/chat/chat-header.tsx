@@ -8,7 +8,7 @@ interface ChatHeaderProps {
   serverId: string;
   name: string;
   type: "channel" | "conversation";
-  image: string;
+  image?: string;
 }
 
 export const ChatHeader = ({
