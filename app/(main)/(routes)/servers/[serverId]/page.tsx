@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 import { currentUser } from "@/lib/current-user";
@@ -16,7 +15,7 @@ const ServerIdPage = async ({
   const user = await currentUser();
 
   if (!user) {
-    return auth().redirectToSignIn();
+    return redirect("/");
   }
 
   const server = await db.server.findUnique({

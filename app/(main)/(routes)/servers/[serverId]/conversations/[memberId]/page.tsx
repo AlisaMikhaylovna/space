@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 import { db } from "@/lib/db";
@@ -25,7 +24,7 @@ const MemberIdPage = async ({
     const user = await currentUser();
 
     if (!user) {
-        return auth().redirectToSignIn();
+        return redirect("/");
     }
 
     const currentMember = await db.member.findFirst({
@@ -55,8 +54,8 @@ const MemberIdPage = async ({
     return (
         <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
             <ChatHeader
-                imageUrl={otherMember.user.imageUrl}
-                name={otherMember.user.name}
+                image={otherMember.user.image!}
+                name={otherMember.user.name!}
                 serverId={params.serverId}
                 type="conversation"
             />
@@ -72,7 +71,7 @@ const MemberIdPage = async ({
                 }}
             />
             <ChatInput
-                name={otherMember.user.name}
+                name={otherMember.user.name!}
                 type="conversation"
                 apiUrl="/api/socket/direct-messages"
                 query={{

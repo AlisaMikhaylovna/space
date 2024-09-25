@@ -8,14 +8,14 @@ interface ChatHeaderProps {
   serverId: string;
   name: string;
   type: "channel" | "conversation";
-  imageUrl?: string;
+  image: string;
 }
 
 export const ChatHeader = ({
   serverId,
   name,
   type,
-  imageUrl
+  image
 }: ChatHeaderProps) => {
   return (
     <div className="text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2">
@@ -25,7 +25,7 @@ export const ChatHeader = ({
       )}
       {type === "conversation" && (
         <UserAvatar
-          src={imageUrl}
+          user={{ name: name || null, image: image || null }}
           className="h-8 w-8 md:h-8 md:w-8 mr-2"
         />
       )}

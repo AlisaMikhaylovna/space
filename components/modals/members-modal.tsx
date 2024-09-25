@@ -26,7 +26,7 @@ import {
 import { useModal } from "@/hooks/use-modal-store";
 import { ServerWithMembersWithusers } from "@/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { userAvatar } from "@/components/user-avatar";
+import { UserAvatar } from "@/components/user-avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -111,7 +111,10 @@ export const MembersModal = () => {
         <ScrollArea className="mt-8 max-h-[420px] pr-6">
           {server?.members?.map((member) => (
             <div key={member.id} className="flex items-center gap-x-2 mb-6">
-              <userAvatar src={member.user.imageUrl} />
+              <UserAvatar
+                user={{ name: member.user.name || null, image: member.user.image || null }}
+                className='h-8 w-8'
+              />
               <div className="flex flex-col gap-y-1">
                 <div className="text-xs font-semibold flex items-center gap-x-1">
                   {member.user.name}
