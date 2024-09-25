@@ -1,40 +1,19 @@
-import NextAuth from "next-auth";
-import authConfig from "@/auth.config";
-import { publicRoutes, authRoutes, apiAuthPrefix, DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import { getToken } from 'next-auth/jwt'
+import { NextRequest, NextResponse } from 'next/server'
 
-const { auth } = NextAuth(authConfig)
 
-export default auth((req) => {
-    const { nextUrl } = req;
-    const isLoggedIn = !!req.auth;
+export async function middleware(req: NextRequest) {
+    const token = await getToken({ req })
 
-    const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-    const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-    const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-
-    if (isApiAuthRoute) {
-        return undefined;
+    if (!token) {
+        return NextResponse.redirect(new URL('/sign-in', req.nextUrl))
     }
+}
 
-    if (isAuthRoute) {
-        if (isLoggedIn) {
-            return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
-        }
-        return undefined;
-    }
-
-    if (!isLoggedIn && !isPublicRoute) {
-        return Response.redirect(new URL("/login", nextUrl));
-    }
-
-    return undefined;
-})
-
-// Optionally, don't invoke Middleware on some paths
+// See "Matching Paths" below to learn more
 export const config = {
-    matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
-};
-
+    matcher: ['/r/:path*/submit', '/r/create'],
+}
 
 
 
