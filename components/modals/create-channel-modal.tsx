@@ -25,14 +25,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useParams, useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from "@/components/ui/select";
-import { useEffect } from "react";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -42,32 +34,21 @@ const formSchema = z.object({
         {
             message: "Channel name cannot be 'general'"
         }
-    ),
-    type: z.nativeEnum(ChannelType)
+    )
 });
 
 export const CreateChannelModal = () => {
     const { isOpen, onClose, type, data } = useModal();
     const router = useRouter();
     const params = useParams();
-    const { channelType } = data;
     const isModalOpen = isOpen && type === "createChannel";
 
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
-            type: channelType || ChannelType.TEXT,
+            name: ""
         }
     });
-
-    useEffect(() => {
-        if (channelType) {
-            form.setValue("type", channelType);
-        } else {
-            form.setValue("type", ChannelType.TEXT);
-        }
-    }, [channelType, form]);
 
 
     const isLoading = form.formState.isSubmitting;
@@ -124,40 +105,6 @@ export const CreateChannelModal = () => {
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="type"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Channel Type</FormLabel>
-                                        <Select
-                                            disabled={isLoading}
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                        >
-                                            <FormControl>
-                                                <SelectTrigger
-                                                    className="bg-zinc-300/50 border-0 focus:ring-0 text-black ring-offset-0 focus:ring-offset-0 capitalize outline-none"
-                                                >
-                                                    <SelectValue placeholder="Select a channel type" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {Object.values(ChannelType).map((type) => (
-                                                    <SelectItem
-                                                        key={type}
-                                                        value={type}
-                                                        className="capitalize"
-                                                    >
-                                                        {type.toLowerCase()}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
