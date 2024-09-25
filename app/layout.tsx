@@ -6,6 +6,7 @@ import { ModalProvider } from '@/components/providers/modal-provider'
 import { cn } from "@/lib/utils"
 import { SocketProvider } from '@/components/providers/socket-provider'
 import { QueryProvider } from '@/components/providers/query-provider'
+import { SessionProvider } from 'next-auth/react'
 import { Toast } from '@/components/ui/toast'
 
 const font = Open_Sans({ subsets: ['latin'] })
@@ -31,7 +32,9 @@ export default function RootLayout({
           <SocketProvider>
             <ModalProvider />
             <QueryProvider>
-              {children}
+              <SessionProvider>
+                {children}
+              </SessionProvider>
             </QueryProvider>
           </SocketProvider>
         </ThemeProvider>
