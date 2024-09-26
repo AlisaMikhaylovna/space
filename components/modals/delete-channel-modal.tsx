@@ -1,9 +1,10 @@
 "use client";
 
 import qs from "query-string";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCustomToasts } from "@/hooks/use-custom-toasts";
 
 import {
     Dialog,
@@ -19,6 +20,8 @@ import { Button } from "@/components/ui/button";
 export const DeleteChannelModal = () => {
     const { isOpen, onClose, type, data } = useModal();
     const router = useRouter();
+
+    const { loginToast } = useCustomToasts();
 
     const isModalOpen = isOpen && type === "deleteChannel";
     const { server, channel } = data;
@@ -41,7 +44,11 @@ export const DeleteChannelModal = () => {
             router.refresh();
             router.push(`/servers/${server?.id}`);
         } catch (error) {
-            console.log(error);
+            if (error instanceof AxiosError) {
+                if (error.response?.status === 401) {
+                    return loginToast();
+                }
+            }
         } finally {
             setIsLoading(false);
         }

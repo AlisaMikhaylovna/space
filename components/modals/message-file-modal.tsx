@@ -1,10 +1,11 @@
 "use client";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import qs from "query-string";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useCustomToasts } from "@/hooks/use-custom-toasts";
 
 import {
   Dialog,
@@ -34,6 +35,8 @@ const formSchema = z.object({
 export const MessageFileModal = () => {
   const { isOpen, onClose, type, data } = useModal();
   const router = useRouter();
+
+  const { loginToast } = useCustomToasts();
 
   const isModalOpen = isOpen && type === "messageFile";
   const { apiUrl, query } = data;
@@ -68,7 +71,11 @@ export const MessageFileModal = () => {
       router.refresh();
       handleClose();
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          return loginToast();
+        }
+      }
     }
   }
 

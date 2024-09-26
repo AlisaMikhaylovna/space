@@ -1,6 +1,6 @@
 import { MemberRole } from "@prisma/client";
 import { redirect } from "next/navigation";
-import { Hash, ShieldAlert, ShieldCheck } from "lucide-react";
+import { Hash, ShieldAlert, ShieldCheck, MessageCircle } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -49,11 +49,18 @@ export const ServerSidebar = async ({
         orderBy: {
           role: "asc",
         }
-      }
+      },
+      subreddits: {
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
     }
   });
 
-  const chatChannels = server?.channels
+  const chatChannels = server?.channels;
+
+  const topics = server?.subreddits;
 
   const members = server?.members.filter((member) => member.userId !== user.id)
 
@@ -82,6 +89,14 @@ export const ServerSidebar = async ({
                   icon: <Hash className="mr-2 h-4 w-4" />,
                 }))
               }, {
+                label: "Topics",
+                type: "topic",
+                data: topics?.map((topic) => ({
+                  id: topic.id,
+                  name: topic.name,
+                  icon: <MessageCircle className="mr-2 h-4 w-4" />,
+                }))
+              }, {
                 label: "Members",
                 type: "member",
                 data: members?.map((member) => ({
@@ -89,7 +104,7 @@ export const ServerSidebar = async ({
                   name: member.user.name!,
                   icon: roleIconMap[member.role],
                 }))
-              },
+              }
             ]}
           />
         </div>

@@ -1,19 +1,26 @@
-import { getAuthSession } from '@/lib/auth'
-import { db } from '@/lib/db'
-import { subredditSchema } from '@/lib/schemas/subreddit'
-import { NextResponse } from 'next/server'
-import { z } from 'zod'
+import { NextResponse } from "next/server";
+import { MemberRole } from "@prisma/client";
 
-export async function POST(req: Request) {
+import { currentUser } from "@/lib/current-user";
+import { db } from "@/lib/db";
+
+export async function POST(
+    req: Request
+) {
     try {
-        const session = await getAuthSession()
+        const user = await currentUser();
+        const { name } = await req.json();
+        const { searchParams } = new URL(req.url);
 
-        if (!session?.user) {
+        const serverId = searchParams.get("serverId");
+
+        if (!user) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        const body = await req.json()
-        const { name } = subredditSchema.parse(body)
+        if (!serverId) {
+            return new NextResponse("Server ID missing", { status: 400 });
+        }
 
         const subredditExists = await db.subreddit.findFirst({
             where: {
@@ -22,29 +29,51 @@ export async function POST(req: Request) {
         })
 
         if (subredditExists) {
-            return new NextResponse('Subreddit already exists', { status: 409 })
+            return new Response('Topic already exists', { status: 409 })
         }
 
-        const subreddit = await db.subreddit.create({
-            data: {
-                name,
-                creatorId: session.user.id,
+        const server = await db.server.update({
+            where: {
+                id: serverId,
+                members: {
+                    some: {
+                        userId: user.id,
+                        role: {
+                            in: [MemberRole.ADMIN, MemberRole.MODERATOR]
+                        }
+                    }
+                }
             },
-        })
+            data: {
+                subreddits: {
+                    create: {
+                        creatorId: user.id,
+                        name
+                    }
+                }
+            }
+        });
+
+        const subreddit = await db.subreddit.findUnique({
+            where: {
+                name
+            },
+        });
+
+        if (!subreddit) {
+            return new NextResponse("Topic not exsits", { status: 400 });
+        }
 
         await db.subscription.create({
             data: {
-                userId: session.user.id,
+                userId: user.id,
                 subredditId: subreddit.id,
             },
         })
 
-        return new NextResponse(subreddit.name)
+        return NextResponse.json(server);
     } catch (error) {
-        if (error instanceof z.ZodError) {
-            return new NextResponse(error.message, { status: 422 })
-        }
-
-        return new NextResponse('Could not create subreddit', { status: 500 })
+        console.log("CHANNELS_POST", error);
+        return new NextResponse("Internal Error", { status: 500 });
     }
 }

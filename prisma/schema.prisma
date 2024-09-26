@@ -20,10 +20,10 @@ model User {
   image         String?
   accounts      Account[]
 
-  servers    Server[]
-  members    Member[]
-  channels   Channel[]
-  subreddits Subreddit[]
+  servers           Server[]
+  members           Member[]
+  channels          Channel[]
+  createdSubreddits Subreddit[] @relation("CreatedBy")
 
   Post        Post[]
   Comment     Comment[]
@@ -115,7 +115,7 @@ model Member {
 
 model Channel {
   id   String @id @default(uuid())
-  name String
+  name String @unique
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -194,8 +194,8 @@ model Subreddit {
 
   posts Post[]
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creatorId String?
+  Creator   User?   @relation("CreatedBy", fields: [creatorId], references: [id])
 
   serverId String
   server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
@@ -206,8 +206,8 @@ model Subreddit {
   updatedAt DateTime @updatedAt
 
   @@index([name])
-  @@index([userId])
   @@index([serverId])
+  @@index([creatorId])
 }
 
 model Subscription {

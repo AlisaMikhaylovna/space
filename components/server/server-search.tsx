@@ -16,7 +16,7 @@ import {
 interface ServerSearchProps {
   data: {
     label: string;
-    type: "channel" | "member",
+    type: "channel" | "member" | "topic",
     data: {
       icon: React.ReactNode;
       name: string;
@@ -44,7 +44,7 @@ export const ServerSearch = ({
     return () => document.removeEventListener("keydown", down)
   }, []);
 
-  const onClick = ({ id, type }: { id: string, type: "channel" | "member" }) => {
+  const onClick = ({ id, type, name }: { id: string, type: "channel" | "member" | "topic", name: string }) => {
     setOpen(false);
 
     if (type === "member") {
@@ -53,6 +53,10 @@ export const ServerSearch = ({
 
     if (type === "channel") {
       return router.push(`/servers/${params?.serverId}/channels/${id}`)
+    }
+
+    if (type === "topic") {
+      return router.push(`/servers/${params?.serverId}/topics/${name}`)
     }
   }
 
@@ -75,7 +79,7 @@ export const ServerSearch = ({
         </kbd>
       </button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Search all channels and members" />
+        <CommandInput placeholder="Search all" />
         <CommandList>
           <CommandEmpty>
             No Results found
@@ -87,7 +91,7 @@ export const ServerSearch = ({
               <CommandGroup key={label} heading={label}>
                 {data?.map(({ id, icon, name }) => {
                   return (
-                    <CommandItem key={id} onSelect={() => onClick({ id, type })}>
+                    <CommandItem key={id} onSelect={() => onClick({ id, type, name })}>
                       {icon}
                       <span>{name}</span>
                     </CommandItem>

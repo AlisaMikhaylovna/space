@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import qs from "query-string";
 import {
   Check,
@@ -15,6 +15,7 @@ import {
 import { useState } from "react";
 import { MemberRole } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { useCustomToasts } from "@/hooks/use-custom-toasts";
 
 import {
   Dialog,
@@ -50,6 +51,8 @@ export const MembersModal = () => {
   const { onOpen, isOpen, onClose, type, data } = useModal();
   const [loadingId, setLoadingId] = useState("");
 
+  const { loginToast } = useCustomToasts();
+
   const isModalOpen = isOpen && type === "members";
   const { server } = data as { server: ServerWithMembersWithusers };
 
@@ -68,7 +71,11 @@ export const MembersModal = () => {
       router.refresh();
       onOpen("members", { server: response.data });
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          return loginToast();
+        }
+      }
     } finally {
       setLoadingId("");
     }

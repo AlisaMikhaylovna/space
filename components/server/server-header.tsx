@@ -2,21 +2,21 @@
 
 import { ServerWithMembersWithusers } from "@/types";
 import { MemberRole } from "@prisma/client";
-import { 
-  ChevronDown, 
-  LogOut, 
-  PlusCircle, 
-  Settings, 
-  Trash, 
+import {
+  ChevronDown,
+  LogOut,
+  PlusCircle,
+  Settings,
+  Trash,
   UserPlus,
   Users
 } from "lucide-react";
 
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { useModal } from "@/hooks/use-modal-store";
@@ -38,7 +38,7 @@ export const ServerHeader = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="focus:outline-none" 
+        className="focus:outline-none"
         asChild
       >
         <button
@@ -84,6 +84,15 @@ export const ServerHeader = ({
             className="px-3 py-2 text-sm cursor-pointer"
           >
             Create Channel
+            <PlusCircle className="h-4 w-4 ml-auto" />
+          </DropdownMenuItem>
+        )}
+        {isModerator && (
+          <DropdownMenuItem
+            onClick={() => onOpen("createTopic")}
+            className="px-3 py-2 text-sm cursor-pointer"
+          >
+            Create Topic
             <PlusCircle className="h-4 w-4 ml-auto" />
           </DropdownMenuItem>
         )}

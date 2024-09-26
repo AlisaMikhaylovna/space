@@ -1,8 +1,9 @@
 "use client";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCustomToasts } from "@/hooks/use-custom-toasts";
 
 import {
   Dialog,
@@ -19,6 +20,8 @@ export const DeleteServerModal = () => {
   const { isOpen, onClose, type, data } = useModal();
   const router = useRouter();
 
+  const { loginToast } = useCustomToasts();
+
   const isModalOpen = isOpen && type === "deleteServer";
   const { server } = data;
 
@@ -34,7 +37,11 @@ export const DeleteServerModal = () => {
       router.refresh();
       router.push("/");
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          return loginToast();
+        }
+      }
     } finally {
       setIsLoading(false);
     }

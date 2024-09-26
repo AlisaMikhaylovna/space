@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { Check, Copy, RefreshCw } from "lucide-react";
 import { useState } from "react";
 
@@ -15,6 +15,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useOrigin } from "@/hooks/use-origin";
+import { useCustomToasts } from "@/hooks/use-custom-toasts";
 
 export const InviteModal = () => {
   const { onOpen, isOpen, onClose, type, data } = useModal();
@@ -25,6 +26,8 @@ export const InviteModal = () => {
 
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { loginToast } = useCustomToasts();
 
   const inviteUrl = `${origin}/invite/${server?.inviteCode}`;
 
@@ -49,7 +52,11 @@ export const InviteModal = () => {
 
       onOpen("invite", { server: response.data });
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          return loginToast();
+        }
+      }
     } finally {
       setIsLoading(false);
     }

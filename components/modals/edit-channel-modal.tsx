@@ -1,10 +1,11 @@
 "use client";
 
 import qs from "query-string";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useCustomToasts } from '@/hooks/use-custom-toasts'
 
 import {
     Dialog,
@@ -30,6 +31,8 @@ import { useEffect } from "react";
 const formSchema = z.object({
     name: z.string().min(1, {
         message: "Channel name is required."
+    }).max(20, {
+        message: "Up to 20 characters."
     }).refine(
         name => name !== "general",
         {
@@ -44,6 +47,8 @@ export const EditChannelModal = () => {
 
     const isModalOpen = isOpen && type === "editChannel";
     const { channel, server } = data;
+
+    const { loginToast } = useCustomToasts();
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -74,7 +79,11 @@ export const EditChannelModal = () => {
             router.refresh();
             onClose();
         } catch (error) {
-            console.log(error);
+            if (error instanceof AxiosError) {
+                if (error.response?.status === 401) {
+                    return loginToast();
+                }
+            }
         }
     }
 
@@ -127,4 +136,8 @@ export const EditChannelModal = () => {
             </DialogContent>
         </Dialog>
     )
+}
+
+function loginToast() {
+    throw new Error("Function not implemented.");
 }

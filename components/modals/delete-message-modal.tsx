@@ -1,8 +1,9 @@
 "use client";
 
 import qs from "query-string";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useState } from "react";
+import { useCustomToasts } from "@/hooks/use-custom-toasts";
 
 import {
   Dialog,
@@ -17,6 +18,8 @@ import { Button } from "@/components/ui/button";
 
 export const DeleteMessageModal = () => {
   const { isOpen, onClose, type, data } = useModal();
+
+  const { loginToast } = useCustomToasts();
 
   const isModalOpen = isOpen && type === "deleteMessage";
   const { apiUrl, query } = data;
@@ -35,7 +38,11 @@ export const DeleteMessageModal = () => {
 
       onClose();
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          return loginToast();
+        }
+      }
     } finally {
       setIsLoading(false);
     }

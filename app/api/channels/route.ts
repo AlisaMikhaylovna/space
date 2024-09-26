@@ -26,6 +26,16 @@ export async function POST(
             return new NextResponse("Name cannot be 'general'", { status: 400 });
         }
 
+        const channelExists = await db.subreddit.findFirst({
+            where: {
+                name,
+            },
+        })
+
+        if (channelExists) {
+            return new Response('Channel already exists', { status: 409 })
+        }
+
         const server = await db.server.update({
             where: {
                 id: serverId,

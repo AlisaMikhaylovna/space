@@ -1,9 +1,10 @@
 "use client";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useCustomToasts } from '@/hooks/use-custom-toasts'
 
 import {
   Dialog,
@@ -28,9 +29,13 @@ import { useModal } from "@/hooks/use-modal-store";
 import { FileUploadServer } from "../file-upload-server";
 
 const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Server name is required."
-  }),
+  name: z.string()
+    .min(3, {
+      message: "Server name is required."
+    })
+    .max(20, {
+      message: "Up to 20 characters."
+    }),
   imageUrl: z.string().min(1, {
     message: "Server image is required."
   })
@@ -41,6 +46,8 @@ export const CreateServerModal = () => {
   const router = useRouter();
 
   const isModalOpen = isOpen && type === "createServer";
+
+  const { loginToast } = useCustomToasts();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -60,7 +67,11 @@ export const CreateServerModal = () => {
       router.refresh();
       onClose();
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          return loginToast();
+        }
+      }
     }
   }
 
