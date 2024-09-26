@@ -9,22 +9,25 @@ datasource db {
 }
 
 model User {
-  id                String         @id @default(cuid())
-  name              String?
-  email             String?        @unique
-  emailVerified     DateTime?
-  createdSubreddits Subreddit[]    @relation("CreatedBy")
-  subscriptions     Subscription[]
-  votes             Vote[]
-  username          String?        @unique
-  image             String?
-  accounts          Account[]
-  Post              Post[]
-  Comment           Comment[]
-  CommentVote       CommentVote[]
-  servers           Server[]
-  members           Member[]
-  channels          Channel[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+
+  subscriptions Subscription[]
+  votes         Vote[]
+  username      String?        @unique
+  image         String?
+  accounts      Account[]
+
+  servers    Server[]
+  members    Member[]
+  channels   Channel[]
+  subreddits Subreddit[]
+
+  Post        Post[]
+  Comment     Comment[]
+  CommentVote CommentVote[]
 
   sessions Session[]
 
@@ -71,8 +74,9 @@ model Server {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  members  Member[]
-  channels Channel[]
+  members    Member[]
+  channels   Channel[]
+  subreddits Subreddit[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -185,18 +189,25 @@ model DirectMessage {
 }
 
 model Subreddit {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  posts     Post[]
+  id   String @id @default(cuid())
+  name String @unique
 
-  creatorId   String?
-  Creator     User?          @relation("CreatedBy", fields: [creatorId], references: [id])
+  posts Post[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  serverId String
+  server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
   subscribers Subscription[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([name])
-  @@index([creatorId])
+  @@index([userId])
+  @@index([serverId])
 }
 
 model Subscription {
