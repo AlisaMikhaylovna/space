@@ -21,7 +21,7 @@ interface SubscribeLeaveToggleProps {
     subredditName: string
 }
 
-const SubscribeLeaveToggle = ({
+export const SubscribeLeaveToggle = ({
     isSubscribed,
     subredditId,
     subredditName,
@@ -108,5 +108,3 @@ const SubscribeLeaveToggle = ({
         </Button>
     )
 }
-
-export default SubscribeLeaveToggle

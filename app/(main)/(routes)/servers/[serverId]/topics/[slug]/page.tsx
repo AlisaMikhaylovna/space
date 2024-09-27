@@ -3,6 +3,7 @@ import { PostFeed } from '@/components/topic/post-feed'
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from '@/config'
 import { getAuthSession } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { ExtendedPost } from '@/types'
 import { notFound } from 'next/navigation'
 
 interface PageProps {
@@ -27,14 +28,21 @@ const TopicPage = async ({ params }: PageProps) => {
                     subreddit: true,
                 },
                 orderBy: {
-                    createdAt: 'desc'
+                    createdAt: 'desc',
                 },
                 take: INFINITE_SCROLL_PAGINATION_RESULTS,
             },
         },
-    })
-
-    if (!subreddit) return notFound()
+    });
+    if (!subreddit) return notFound();
+    // @ts-ignore
+    const posts: ExtendedPost[] = subreddit.posts.map(post => ({
+        ...post,
+        subreddit: post.subreddit,
+        votes: post.votes || [],
+        author: post.author,
+        comments: post.comments || [],
+    }));
 
     return (
         <>
@@ -42,7 +50,7 @@ const TopicPage = async ({ params }: PageProps) => {
                 {subreddit.name}
             </h1>
             <CreatePost session={session} />
-            <PostFeed initialPosts={subreddit.posts} subredditName={subreddit.name} />
+            <PostFeed initialPosts={posts} subredditName={subreddit.name} />
         </>
     )
 }

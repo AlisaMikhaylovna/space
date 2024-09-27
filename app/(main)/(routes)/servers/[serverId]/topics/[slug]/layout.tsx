@@ -10,10 +10,10 @@ import { ReactNode } from 'react'
 
 const Layout = async ({
     children,
-    params: { slug },
+    params: { serverId, slug },
 }: {
     children: ReactNode
-    params: { slug: string }
+    params: { serverId: string, slug: string }
 }) => {
     const session = await getAuthSession()
 
@@ -100,7 +100,7 @@ const Layout = async ({
                                     variant: 'outline',
                                     className: 'w-full mb-6',
                                 })}
-                                href={`r/${slug}/submit`}>
+                                href={`/servers/${serverId}/topics/${slug}/submit`}>
                                 Create Post
                             </Link>
                         </dl>
