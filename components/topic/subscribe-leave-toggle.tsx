@@ -96,12 +96,14 @@ const SubscribeLeaveToggle = ({
         <Button
             className='w-full mt-1 mb-4'
             onClick={() => unsubscribe()}>
+            disabled={isSubLoading}
             Leave topic
         </Button>
     ) : (
         <Button
             className='w-full mt-1 mb-4'
             onClick={() => subscribe()}>
+            disabled={isUnsubLoading}
             Join to post
         </Button>
     )

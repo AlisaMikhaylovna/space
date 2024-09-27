@@ -15,6 +15,18 @@ export const ourFileRouter = {
     })
     .onUploadComplete(() => { }),
 
+  imageUploader: f({ image: { maxFileSize: '8MB' } })
+    .middleware(async (req) => {
+      const user = await getToken({ req: req as unknown as NextRequest });
+
+      if (!user) throw new Error('Unauthorized');
+
+      return { userId: user.id };
+    })
+    .onUploadComplete(() => { }),
+
+
+
   messageFile: f({
     image: { maxFileSize: "4MB", maxFileCount: 1 },
     pdf: { maxFileSize: "8MB", maxFileCount: 1 },
