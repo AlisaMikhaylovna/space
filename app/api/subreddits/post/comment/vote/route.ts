@@ -1,4 +1,4 @@
-import { getAuthSession } from '@/lib/auth'
+import { currentUser } from '@/lib/current-user';
 import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
 
@@ -6,16 +6,16 @@ export async function PATCH(req: Request) {
     try {
         const { commentId, voteType } = await req.json()
 
-        const session = await getAuthSession()
+        const user = await currentUser();
 
-        if (!session?.user) {
+        if (!user) {
             return new NextResponse('Unauthorized', { status: 401 })
         }
 
         // check if user has already voted on this post
         const existingVote = await db.commentVote.findFirst({
             where: {
-                userId: session.user.id,
+                userId: user.id,
                 commentId,
             },
         })
@@ -27,7 +27,7 @@ export async function PATCH(req: Request) {
                     where: {
                         userId_commentId: {
                             commentId,
-                            userId: session.user.id,
+                            userId: user.id,
                         },
                     },
                 })
@@ -38,7 +38,7 @@ export async function PATCH(req: Request) {
                     where: {
                         userId_commentId: {
                             commentId,
-                            userId: session.user.id,
+                            userId: user.id,
                         },
                     },
                     data: {
@@ -53,7 +53,7 @@ export async function PATCH(req: Request) {
         await db.commentVote.create({
             data: {
                 type: voteType,
-                userId: session.user.id,
+                userId: user.id,
                 commentId,
             },
         })

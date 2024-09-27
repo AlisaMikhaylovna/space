@@ -9,12 +9,6 @@ import { useToast } from '@/hooks/use-toast'
 import { useCustomToasts } from '@/hooks/use-custom-toasts'
 import { z } from 'zod'
 
-const SubredditSubscriptionValidator = z.object({
-    subredditId: z.string(),
-})
-
-type SubscribeToSubredditPayload = z.infer<typeof SubredditSubscriptionValidator>
-
 interface SubscribeLeaveToggleProps {
     isSubscribed: boolean
     subredditId: string
@@ -29,6 +23,12 @@ export const SubscribeLeaveToggle = ({
     const { toast } = useToast();
     const { loginToast } = useCustomToasts();
     const router = useRouter()
+
+    const subredditSubscriptionPrisma = z.object({
+        subredditId: z.string(),
+    })
+
+    type SubscribeToSubredditPayload = z.infer<typeof subredditSubscriptionPrisma>
 
     const { mutate: subscribe, isPending: isSubLoading } = useMutation({
         mutationFn: async () => {

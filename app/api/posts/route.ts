@@ -1,18 +1,18 @@
-import { getAuthSession } from '@/lib/auth'
+import { currentUser } from '@/lib/current-user';
 import { db } from '@/lib/db'
 import { z } from 'zod'
 
 export async function GET(req: Request) {
     const url = new URL(req.url)
 
-    const session = await getAuthSession()
+    const user = await currentUser();
 
     let followedCommunitiesIds: string[] = []
 
-    if (session) {
+    if (user) {
         const followedCommunities = await db.subscription.findMany({
             where: {
-                userId: session.user.id,
+                userId: user.id,
             },
             include: {
                 subreddit: true,
@@ -43,7 +43,7 @@ export async function GET(req: Request) {
                     name: subredditName,
                 },
             }
-        } else if (session) {
+        } else if (user) {
             whereClause = {
                 subreddit: {
                     id: {

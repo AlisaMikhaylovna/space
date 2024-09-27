@@ -1,4 +1,4 @@
-import { getAuthSession } from '@/lib/auth'
+import { currentUser } from '@/lib/current-user';
 import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
 
@@ -6,9 +6,9 @@ export async function POST(req: Request) {
     try {
         const { title, content, subredditId } = await req.json()
 
-        const session = await getAuthSession()
+        const user = await currentUser();
 
-        if (!session?.user) {
+        if (!user) {
             return new NextResponse('Unauthorized', { status: 401 })
         }
 
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
         const subscription = await db.subscription.findFirst({
             where: {
                 subredditId,
-                userId: session.user.id,
+                userId: user.id,
             },
         })
 
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
             data: {
                 title,
                 content,
-                authorId: session.user.id,
+                authorId: user.id,
                 subredditId,
             },
         })

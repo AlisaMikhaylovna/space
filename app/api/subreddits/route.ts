@@ -29,7 +29,7 @@ export async function POST(
         })
 
         if (subredditExists) {
-            return new Response('Topic already exists', { status: 409 })
+            return new NextResponse('Topic already exists', { status: 409 })
         }
 
         const server = await db.server.update({

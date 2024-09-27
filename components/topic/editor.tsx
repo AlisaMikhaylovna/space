@@ -15,28 +15,27 @@ import axios from 'axios'
 
 import '@/styles/editor.css'
 
-export const postPrisma = z.object({
-    title: z
-        .string()
-        .min(3, {
-            message: 'Title must be at least 3 characters long',
-        })
-        .max(128, {
-            message: 'Title must be less than 128 characters long',
-        }),
-    subredditId: z.string(),
-    content: z.any(),
-})
-
-export type PostCreationRequest = z.infer<typeof postPrisma>
-
-type FormData = z.infer<typeof postPrisma>
-
 interface EditorProps {
     subredditId: string
 }
 
 export const Editor = ({ subredditId }: EditorProps) => {
+    const postPrisma = z.object({
+        title: z
+            .string()
+            .min(3, {
+                message: 'Title must be at least 3 characters long',
+            })
+            .max(128, {
+                message: 'Title must be less than 128 characters long',
+            }),
+        subredditId: z.string(),
+        content: z.any(),
+    })
+    type PostCreationRequest = z.infer<typeof postPrisma>
+
+    type FormData = z.infer<typeof postPrisma>
+
     const {
         register,
         handleSubmit,

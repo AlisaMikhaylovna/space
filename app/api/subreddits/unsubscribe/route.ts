@@ -1,12 +1,12 @@
-import { getAuthSession } from '@/lib/auth'
+import { currentUser } from '@/lib/current-user';
 import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
     try {
-        const session = await getAuthSession()
+        const user = await currentUser();
 
-        if (!session?.user) {
+        if (!user) {
             return new NextResponse('Unauthorized', { status: 401 })
         }
 
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
         const subscriptionExists = await db.subscription.findFirst({
             where: {
                 subredditId,
-                userId: session.user.id,
+                userId: user.id,
             },
         })
 
@@ -35,12 +35,12 @@ export async function POST(req: Request) {
             where: {
                 userId_subredditId: {
                     subredditId,
-                    userId: session.user.id,
+                    userId: user.id,
                 },
             },
         })
 
-        return new Response(subredditId)
+        return new NextResponse(subredditId)
     } catch (error) {
         console.log("CHANNELS_POST", error);
         return new NextResponse("Internal Error", { status: 500 });
