@@ -40,6 +40,7 @@ export async function DELETE(
             },
             data: {
                 channels: {
+                    // @ts-ignore
                     delete: {
                         id: params.channelId,
                         name: {
@@ -107,7 +108,6 @@ export async function PATCH(
                         },
                         data: {
                             name,
-                            type,
                         }
                     }
                 }

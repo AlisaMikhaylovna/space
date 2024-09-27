@@ -1,5 +1,6 @@
 import { getAuthSession } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { NextResponse } from 'next/server'
 
 export async function PATCH(req: Request) {
     try {
@@ -8,7 +9,7 @@ export async function PATCH(req: Request) {
         const session = await getAuthSession()
 
         if (!session?.user) {
-            return new Response('Unauthorized', { status: 401 })
+            return new NextResponse('Unauthorized', { status: 401 })
         }
 
         // check if user has already voted on this post
@@ -30,7 +31,7 @@ export async function PATCH(req: Request) {
                         },
                     },
                 })
-                return new Response('OK')
+                return new NextResponse('OK')
             } else {
                 // if vote type is different, update the vote
                 await db.commentVote.update({
@@ -44,7 +45,7 @@ export async function PATCH(req: Request) {
                         type: voteType,
                     },
                 })
-                return new Response('OK')
+                return new NextResponse('OK')
             }
         }
 
@@ -57,9 +58,9 @@ export async function PATCH(req: Request) {
             },
         })
 
-        return new Response('OK')
+        return new NextResponse('OK')
     } catch (error) {
-        return new Response(
+        return new NextResponse(
             'Could not post to subreddit at this time. Please try later',
             { status: 500 }
         )
