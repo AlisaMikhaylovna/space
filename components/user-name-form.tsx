@@ -35,7 +35,6 @@ const usernameVPrisma = z.object({
         .regex(/^[a-zA-Z0-9_]+$/),
 })
 
-
 type FormData = z.infer<typeof usernameVPrisma>
 
 export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
