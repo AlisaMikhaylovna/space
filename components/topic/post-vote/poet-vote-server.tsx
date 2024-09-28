@@ -23,7 +23,7 @@ export const PostVoteServer = async ({
     initialVote,
     getData,
 }: PostVoteServerProps) => {
-    const user = await currentUser()
+    const user = await currentUser();
 
     let _votesAmt: number = 0
     let _currentVote: Vote['type'] | null | undefined = undefined

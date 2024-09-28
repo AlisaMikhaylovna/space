@@ -1,8 +1,8 @@
-import { getAuthSession } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { Comment, CommentVote, User } from '@prisma/client'
 import { CreateComment } from './create-comment'
 import { PostComment } from './post-comment'
+import { currentUser } from '@/lib/current-user'
 
 type ExtendedComment = Comment & {
     votes: CommentVote[]
@@ -17,11 +17,11 @@ type ReplyComment = Comment & {
 
 interface CommentsSectionProps {
     postId: string
-    comments: ExtendedComment[]
+    comments?: ExtendedComment[]
 }
 
 export const CommentsSection = async ({ postId }: CommentsSectionProps) => {
-    const session = await getAuthSession()
+    const user = await currentUser();
 
     const comments = await db.comment.findMany({
         where: {
@@ -61,7 +61,7 @@ export const CommentsSection = async ({ postId }: CommentsSectionProps) => {
                         )
 
                         const topLevelCommentVote = topLevelComment.votes.find(
-                            (vote) => vote.userId === session?.user.id
+                            (vote) => vote.userId === user?.id
                         )
 
                         return (
@@ -86,7 +86,7 @@ export const CommentsSection = async ({ postId }: CommentsSectionProps) => {
                                         }, 0)
 
                                         const replyVote = reply.votes.find(
-                                            (vote) => vote.userId === session?.user.id
+                                            (vote) => vote.userId === user?.id
                                         )
 
                                         return (
