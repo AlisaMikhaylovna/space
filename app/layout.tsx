@@ -6,7 +6,8 @@ import { ModalProvider } from '@/components/providers/modal-provider'
 import { cn } from "@/lib/utils"
 import { SocketProvider } from '@/components/providers/socket-provider'
 import { QueryProvider } from '@/components/providers/query-provider'
-import { SessionProvider } from 'next-auth/react'
+import { SProvider } from '@/components/providers/session-provider'
+import { ToastProvider } from '@/components/ui/toast' 
 import { Toast } from '@/components/ui/toast'
 import { Navbar } from '@/components/navbar'
 
@@ -35,15 +36,17 @@ export default function RootLayout({
           <SocketProvider>
             <ModalProvider />
             <QueryProvider>
-              <SessionProvider>
+              <SProvider>
                 <Navbar />
                 {authModal}
                 {children}
-              </SessionProvider>
+              </SProvider>
             </QueryProvider>
           </SocketProvider>
         </ThemeProvider>
-        <Toast />
+        <ToastProvider>
+          <Toast />
+        </ToastProvider>
       </body>
     </html>
   )

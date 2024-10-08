@@ -5,7 +5,7 @@ const MainLayout = async ({
 }: {
   children: React.ReactNode;
 }) => {
-  return ( 
+  return (
     <div className="h-full">
       <div className="hidden md:flex h-full w-[72px] z-30 flex-col fixed inset-y-0">
         <NavigationSidebar />
@@ -14,7 +14,7 @@ const MainLayout = async ({
         {children}
       </main>
     </div>
-   );
+  );
 }
- 
+
 export default MainLayout;
