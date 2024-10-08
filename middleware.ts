@@ -12,7 +12,7 @@ export async function middleware(req: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-    matcher: ['/servers', '/invite']
+    matcher: ['servers', '/servers/:path*/channels', '/servers/:path*/conversations', '/servers/:path*/topics', '/invite']
 }
 
 

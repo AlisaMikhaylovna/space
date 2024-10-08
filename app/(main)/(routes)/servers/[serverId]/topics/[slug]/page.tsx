@@ -15,7 +15,7 @@ interface PageProps {
 const TopicPage = async ({ params }: PageProps) => {
     const { slug } = params
 
-    const session = await getAuthSession()
+    const session = await getAuthSession();
 
     const subreddit = await db.subreddit.findFirst({
         where: { name: slug },

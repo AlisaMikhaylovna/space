@@ -14,11 +14,11 @@ import {
 import { UserAvatar } from '@/components/user-avatar'
 import { useOrigin } from '@/hooks/use-origin'
 
-interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
+interface UserButtonProps extends React.HTMLAttributes<HTMLDivElement> {
     user: Pick<User, 'name' | 'image' | 'email'>
 }
 
-export function UserAccountNav({ user }: UserAccountNavProps) {
+export function UserButton({ user }: UserButtonProps) {
     const origin = useOrigin();
 
     return (
@@ -41,13 +41,6 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
                     </div>
                 </div>
                 <DropdownMenuSeparator />
-                {/* <DropdownMenuItem asChild>
-                    <Link href='/'>Feed</Link>
-                </DropdownMenuItem>
-
-                <DropdownMenuItem asChild>
-                    <Link href='/r/create'>Create Community</Link>
-                </DropdownMenuItem> */}
 
                 <DropdownMenuItem asChild>
                     <Link href='/settings'>Settings</Link>

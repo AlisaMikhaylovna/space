@@ -42,13 +42,15 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
     const {
         handleSubmit,
         register,
-        formState: { errors },
+        formState,
     } = useForm<FormData>({
         resolver: zodResolver(usernameVPrisma),
         defaultValues: {
             name: user?.username || '',
         },
     })
+
+    const isLoading = formState.isSubmitting;
 
     const { mutate: updateUsername, isPending } = useMutation({
         mutationFn: async ({ name }: FormData) => {
@@ -106,15 +108,16 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
                             id='name'
                             className='w-[400px] pl-6'
                             size={32}
+                            disabled={isLoading}
                             {...register('name')}
                         />
-                        {errors?.name && (
-                            <p className='px-1 text-xs text-red-600'>{errors.name.message}</p>
+                        {formState.errors?.name && (
+                            <p className='px-1 text-xs text-red-600'>{formState.errors.name.message}</p>
                         )}
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button>Change name</Button>
+                    <Button disabled={isLoading}>Change name</Button>
                 </CardFooter>
             </Card>
         </form>

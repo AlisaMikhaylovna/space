@@ -8,6 +8,7 @@ import { SocketProvider } from '@/components/providers/socket-provider'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { SessionProvider } from 'next-auth/react'
 import { Toast } from '@/components/ui/toast'
+import { Navbar } from '@/components/navbar'
 
 const font = Open_Sans({ subsets: ['latin'] })
 
@@ -18,8 +19,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  authModal,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode,
+  authModal: React.ReactNode
 }) {
   return (
     <html lang="en" suppressContentEditableWarning>
@@ -33,6 +36,8 @@ export default function RootLayout({
             <ModalProvider />
             <QueryProvider>
               <SessionProvider>
+                <Navbar />
+                {authModal}
                 {children}
               </SessionProvider>
             </QueryProvider>
