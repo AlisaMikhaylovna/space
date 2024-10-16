@@ -3,7 +3,6 @@
 import { cn } from '@/lib/utils';
 import { signIn } from 'next-auth/react';
 import * as React from 'react';
-import { FC } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { FaGithub } from "react-icons/fa";
@@ -11,7 +10,7 @@ import { FaGithub } from "react-icons/fa";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> { }
 
-export const UserAuthForm: FC<UserAuthFormProps> = ({ className, ...props }) => {
+export const UserAuthForm = ({ className, ...props }: UserAuthFormProps) => {
     const { toast } = useToast()
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
 
