@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { SocketProvider } from '@/components/providers/socket-provider'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { SProvider } from '@/components/providers/session-provider'
-import { ToastProvider } from '@/components/ui/toast' 
+import { ToastProvider } from '@/components/ui/toast'
 import { Toast } from '@/components/ui/toast'
 import { Navbar } from '@/components/navbar'
 
@@ -37,7 +37,9 @@ export default function RootLayout({
             <ModalProvider />
             <QueryProvider>
               <SProvider>
-                <Navbar />
+                <div>
+                  <Navbar />
+                </div>
                 {authModal}
                 {children}
               </SProvider>

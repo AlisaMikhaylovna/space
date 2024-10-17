@@ -66,10 +66,10 @@ model Session {
 }
 
 model Server {
-  id         String @id @default(uuid())
+  id         String  @id @default(uuid())
   name       String
-  imageUrl   String @db.Text
-  inviteCode String @unique
+  imageUrl   String?
+  inviteCode String  @unique
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

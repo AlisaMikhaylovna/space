@@ -36,9 +36,9 @@ const formSchema = z.object({
     .max(20, {
       message: "Up to 20 characters."
     }),
-  imageUrl: z.string().min(1, {
-    message: "Server image is required."
-  })
+  // imageUrl: z.string().min(1, {
+  //   message: "Server image is required."
+  // })
 });
 
 export const CreateServerModal = () => {
@@ -94,7 +94,7 @@ export const CreateServerModal = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="space-y-8 px-6">
-              <div className="flex items-center justify-center text-center">
+              {/* <div className="flex items-center justify-center text-center">
                 <FormField
                   control={form.control}
                   name="imageUrl"
@@ -110,7 +110,7 @@ export const CreateServerModal = () => {
                     </FormItem>
                   )}
                 />
-              </div>
+              </div> */}
 
               <FormField
                 control={form.control}

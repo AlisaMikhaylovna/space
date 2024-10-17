@@ -8,13 +8,13 @@ import { ActionTooltip } from "@/components/action-tooltip";
 
 interface NavigationItemProps {
   id: string;
-  imageUrl: string;
+  // imageUrl: string;
   name: string;
 };
 
 export const NavigationItem = ({
   id,
-  imageUrl,
+  // imageUrl,
   name
 }: NavigationItemProps) => {
   const params = useParams();
@@ -43,11 +43,9 @@ export const NavigationItem = ({
           "relative group flex mx-3 h-[48px] w-[48px] rounded-[24px] group-hover:rounded-[16px] transition-all overflow-hidden",
           params?.serverId === id && "bg-primary/10 text-primary rounded-[16px]"
         )}>
-          <Image
-            fill
-            src={imageUrl}
-            alt="Channel"
-          />
+          <div className="shrink-0 size-9 relative overflow-hidden bg-[#616061] text-white font-semibold text-lg rounded-md flex items-center justify-center mr-2">
+            {(params?.serverId as string).charAt(0).toUpperCase()}
+          </div>
         </div>
       </button>
     </ActionTooltip>

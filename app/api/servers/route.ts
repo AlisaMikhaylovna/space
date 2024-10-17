@@ -7,7 +7,7 @@ import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
     try {
-        const { name, imageUrl } = await req.json();
+        const { name } = await req.json();
         const user = await currentUser();
 
         if (!user) {
@@ -18,7 +18,6 @@ export async function POST(req: Request) {
             data: {
                 userId: user.id,
                 name,
-                imageUrl,
                 inviteCode: uuidv4(),
                 channels: {
                     create: [

@@ -31,14 +31,18 @@ export default async function Home() {
     }
 
     return (
-        <main className="flex h-full flex-col justify-center items-center bg-gray-700">
-            <div className="space-y-6 text-center">
+        <main className="flex h-full flex-col justify-center items-center bg-white dark:bg-[#313338]">
+            <div className="text-center">
                 <h1 className={cn("text-6xl font-semibold text-white drop-shadow-md", font.className)}>
                     Space
                 </h1>
+                <p className="mt-4 text-white">Create your space.</p>
             </div>
-            <NavigationAction />
+            <div className="mt-6">
+                <NavigationAction />
+            </div>
         </main>
+
     )
 }
 
