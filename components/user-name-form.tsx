@@ -24,10 +24,10 @@ import { useMutation } from '@tanstack/react-query'
 import axios, { AxiosError } from 'axios'
 
 interface UserNameFormProps extends React.HTMLAttributes<HTMLFormElement> {
-    user: Pick<User, 'id' | 'username'>
+    user: Pick<User, 'id' | 'name'>
 }
 
-const usernameVPrisma = z.object({
+const nameVPrisma = z.object({
     name: z
         .string()
         .min(3)
@@ -35,7 +35,7 @@ const usernameVPrisma = z.object({
         .regex(/^[a-zA-Z0-9_]+$/),
 })
 
-type FormData = z.infer<typeof usernameVPrisma>
+type FormData = z.infer<typeof nameVPrisma>
 
 export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
     const router = useRouter()
@@ -44,9 +44,9 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
         register,
         formState,
     } = useForm<FormData>({
-        resolver: zodResolver(usernameVPrisma),
+        resolver: zodResolver(nameVPrisma),
         defaultValues: {
-            name: user?.username || '',
+            name: user?.name || '',
         },
     })
 
@@ -56,7 +56,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
         mutationFn: async ({ name }: FormData) => {
             const payload: FormData = { name }
 
-            const { data } = await axios.patch(`/api/username/`, payload)
+            const { data } = await axios.patch(`/api/name/`, payload)
             return data
         },
         onError: (err) => {
@@ -64,7 +64,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
                 if (err.response?.status === 409) {
                     return toast({
                         title: 'Username already taken.',
-                        description: 'Please choose another username.',
+                        description: 'Please choose another name.',
                         variant: 'destructive',
                     })
                 }
@@ -72,13 +72,13 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
 
             return toast({
                 title: 'Something went wrong.',
-                description: 'Your username was not updated. Please try again.',
+                description: 'Your name was not updated. Please try again.',
                 variant: 'destructive',
             })
         },
         onSuccess: () => {
             toast({
-                description: 'Your username has been updated.',
+                description: 'Your name has been updated.',
             })
             router.refresh()
         },
@@ -91,7 +91,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
             {...props}>
             <Card>
                 <CardHeader>
-                    <CardTitle>Your username</CardTitle>
+                    <CardTitle>Your name</CardTitle>
                     <CardDescription>
                         Please enter a display name you are comfortable with.
                     </CardDescription>
@@ -99,7 +99,9 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
                 <CardContent>
                     <div className='relative grid gap-1'>
                         <div className='absolute top-0 left-0 w-8 h-10 grid place-items-center'>
-                            <span className='text-sm text-zinc-400'>u/</span>
+                            <span className='text-sm text-zinc-400'>/n</span>
+                        </div> <div className='absolute top-0 left-0 w-8 h-10 grid place-items-center'>
+                            <span className='text-sm text-zinc-400'> </span>
                         </div>
                         <Label className='sr-only' htmlFor='name'>
                             Name

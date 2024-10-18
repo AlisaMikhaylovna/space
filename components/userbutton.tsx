@@ -42,8 +42,8 @@ export function UserButton({ user }: UserButtonProps) {
                 </div>
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem asChild>
-                    <Link href='/settings'>Settings</Link>
+                <DropdownMenuItem asChild >
+                    <Link href='/settings' className='cursor-pointer'>Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem

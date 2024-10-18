@@ -10,13 +10,13 @@ datasource db {
 
 model User {
   id            String    @id @default(cuid())
-  name          String?
+  name          String?    @unique
   email         String?   @unique
   emailVerified DateTime?
 
   subscriptions Subscription[]
   votes         Vote[]
-  username      String?        @unique
+
   image         String?
   accounts      Account[]
 

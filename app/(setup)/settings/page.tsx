@@ -2,12 +2,13 @@ import { redirect } from 'next/navigation'
 
 import { UserNameForm } from '@/components/user-name-form'
 import { authOptions, getAuthSession } from '@/lib/auth'
+import { currentUser } from '@/lib/current-user'
 
 export default async function SettingsPage() {
-    const session = await getAuthSession()
+    const user = await currentUser();
 
-    if (!session?.user) {
-        redirect(authOptions?.pages?.signIn || '/login')
+    if (!user) {
+        redirect("/")
     }
 
     return (
@@ -18,8 +19,8 @@ export default async function SettingsPage() {
                 <div className='grid gap-10'>
                     <UserNameForm
                         user={{
-                            id: session.user.id,
-                            username: session.user.username || '',
+                            id: user.id,
+                            name: user.name || '',
                         }}
                     />
                 </div>

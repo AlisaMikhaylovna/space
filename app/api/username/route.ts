@@ -12,31 +12,31 @@ export async function PATCH(req: Request) {
 
         const { name } = await req.json();
 
-        // check if username is taken
-        const username = await db.user.findFirst({
+        // check if name is taken
+        const name = await db.user.findFirst({
             where: {
-                username: name,
+                name: name,
             },
         })
 
-        if (username) {
+        if (name) {
             return new NextResponse('Username is taken', { status: 409 })
         }
 
-        // update username
+        // update name
         await db.user.update({
             where: {
                 id: user.id,
             },
             data: {
-                username: name,
+                name: name,
             },
         })
 
         return new NextResponse('OK')
     } catch (error) {
         return new NextResponse(
-            'Could not update username at this time. Please try later',
+            'Could not update name at this time. Please try later',
             { status: 500 }
         )
     }

@@ -56,7 +56,7 @@ export const SinglePost = ({
                                 <span className='px-1'>•</span>
                             </>
                         ) : null}
-                        <span>Posted by {post.author.username}</span>{' '}
+                        <span>Posted by {post.author.name}</span>{' '}
                         {formatTimeToNow(new Date(post.createdAt))}
                     </div>
                     <a href={`/servers/${serverId}/topics/${subredditName}/post/${post.id}`}>
