@@ -37,9 +37,6 @@ export default function RootLayout({
             <ModalProvider />
             <QueryProvider>
               <SProvider>
-                <div>
-                  <Navbar />
-                </div>
                 {authModal}
                 {children}
               </SProvider>

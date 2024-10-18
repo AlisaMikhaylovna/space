@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { currentUser } from "@/lib/current-user";
 import { ServerSidebar } from "@/components/server/server-sidebar";
+import { Navbar } from "@/components/navbar";
 
 const ServerIdLayout = async ({
   children,
@@ -33,14 +34,16 @@ const ServerIdLayout = async ({
   }
 
   return (
-    <div className="h-full">
-      <div
-        className="hidden md:flex h-full w-60 z-20 flex-col fixed inset-y-0">
+    <div className="h-full flex">
+      <div className="hidden md:flex h-full w-60 z-20 flex-col fixed inset-y-0">
         <ServerSidebar serverId={params.serverId} />
       </div>
-      <main className="h-full md:pl-60">
-        {children}
-      </main>
+      <div className="flex-grow md:pl-60">
+        <Navbar serverId={params.serverId} />
+        <main className="h-full">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

@@ -29,9 +29,9 @@ export function UserButton({ user }: UserButtonProps) {
                     className='h-8 w-8'
                 />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className='bg-white' align='end'>
+            <DropdownMenuContent className="w-56 text-xs font-medium text-black dark:text-neutral-400 space-y-[2px]">
                 <div className='flex items-center justify-start gap-2 p-2'>
-                    <div className='flex flex-col space-y-1 leading-none'>
+                    <div className='flex flex-col space-y-1 leading-none cursor-default'>
                         {user.name && <p className='font-medium'>{user.name}</p>}
                         {user.email && (
                             <p className='w-[200px] truncate text-sm text-muted-foreground'>
