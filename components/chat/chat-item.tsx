@@ -31,7 +31,6 @@ interface ChatItemProps {
     user: User;
   };
   timestamp: string;
-  fileUrl: string | null;
   deleted: boolean;
   currentMember: Member;
   isUpdated: boolean;
@@ -54,7 +53,6 @@ export const ChatItem = ({
   content,
   member,
   timestamp,
-  fileUrl,
   deleted,
   currentMember,
   isUpdated,
@@ -117,29 +115,15 @@ export const ChatItem = ({
     })
   }, [content]);
 
-  const fileType = fileUrl?.split(".").pop();
-
   const isAdmin = currentMember.role === MemberRole.ADMIN;
   const isModerator = currentMember.role === MemberRole.MODERATOR;
   const isOwner = currentMember.id === member.id;
   const canDeleteMessage = !deleted && (isAdmin || isModerator || isOwner);
-  const canEditMessage = !deleted && isOwner && !fileUrl;
-  const isPDFVidio = (fileType === "pdf" || "mp4") && fileUrl;
-  const isImage = !isPDFVidio && fileUrl;
+  const canEditMessage = !deleted && isOwner;
 
   return (
-    <div
-      className={cn(
-        "relative group flex items-center hover:bg-black/5 p-4 transition",
-        isOwner ? "justify-end" : "justify-start"
-      )}
-    >
-      <div
-        className={cn(
-          "flex gap-x-2 max-w-fit",
-          isOwner ? "flex-row-reverse items-end text-right" : "items-start"
-        )}
-      >
+    <div className="relative group flex items-center hover:bg-black/5 p-4 transition">
+      <div className="flex gap-x-2 max-w-fit">
         <div
           onClick={onMemberClick}
           className="cursor-pointer hover:drop-shadow-md transition"
@@ -150,18 +134,8 @@ export const ChatItem = ({
           />
         </div>
         <div className="flex flex-col">
-          <div
-            className={cn(
-              "flex items-center gap-x-2",
-              isOwner ? "justify-end" : "justify-start"
-            )}
-          >
-            <div
-              className={cn(
-                "flex items-center",
-                isOwner ? "flex-row-reverse" : ""
-              )}
-            >
+          <div className="flex items-center gap-x-2" >
+            <div className="flex items-center">
               <p
                 onClick={onMemberClick}
                 className="font-semibold text-sm hover:underline cursor-pointer"
@@ -176,38 +150,8 @@ export const ChatItem = ({
               {timestamp}
             </span>
           </div>
-          {isImage && (
-            <a
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(
-                "relative aspect-square rounded-md mt-2 overflow-hidden border flex items-center bg-secondary h-48 w-48",
-                isOwner ? "self-end" : "self-start"
-              )}
-            >
-              <Image src={fileUrl} alt={content} fill className="object-cover" />
-            </a>
-          )}
-          {isPDFVidio && (
-            <div
-              className={cn(
-                "relative flex items-center p-2 mt-2 rounded-md bg-background/10",
-                isOwner ? "self-end" : "self-start"
-              )}
-            >
-              <FileIcon className="h-10 w-10 fill-zinc-200 stroke-zinc-400" />
-              <a
-                href={fileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ml-2 text-sm text-zinc-500 dark:text-zinc-400 hover:underline"
-              >
-                File
-              </a>
-            </div>
-          )}
-          {!fileUrl && !isEditing && (
+
+          {!isEditing && (
             <p
               className={cn(
                 "text-sm text-zinc-600 dark:text-zinc-300",
@@ -223,7 +167,7 @@ export const ChatItem = ({
               )}
             </p>
           )}
-          {!fileUrl && isEditing && (
+          {isEditing && (
             <Form {...form}>
               <form
                 className="flex items-center gap-x-2 pt-2"

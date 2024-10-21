@@ -9,30 +9,30 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?    @unique
-  email         String?   @unique
-  emailVerified DateTime?
+  id    String  @id @default(cuid())
+  name  String? @unique
+  email String? @unique
 
   subscriptions Subscription[]
   votes         Vote[]
 
-  image         String?
-  accounts      Account[]
+  image    String?
+  accounts Account[]
 
-  servers           Server[]
-  members           Member[]
-  channels          Channel[]
+  servers Server[]
+  members Member[]
+
   createdSubreddits Subreddit[] @relation("CreatedBy")
 
   Post        Post[]
   Comment     Comment[]
   CommentVote CommentVote[]
 
-  sessions Session[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Session   Session[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  Channel Channel[]
 }
 
 model Account {

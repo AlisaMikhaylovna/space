@@ -1,21 +1,13 @@
 "use client";
 
-import * as z from "zod";
 import axios from "axios";
 import qs from "query-string";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Send } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useModal } from "@/hooks/use-modal-store";
+import { useRef, useState } from "react";
+import Quill from "quill";
+import Editor from "./chat-editor";
 
 interface ChatInputProps {
     apiUrl: string;
@@ -24,9 +16,6 @@ interface ChatInputProps {
     type: "conversation" | "channel";
 }
 
-const formSchema = z.object({
-    content: z.string().min(1),
-});
 
 export const ChatInput = ({
     apiUrl,
@@ -34,71 +23,47 @@ export const ChatInput = ({
     name,
     type
 }: ChatInputProps) => {
-    const { onOpen } = useModal();
+
+    const [editorKey, setEditorKey] = useState(0);
+    const [isPending, setIsPending] = useState(false);
+
+    const editorRef = useRef<Quill | null>(null);
+
     const router = useRouter();
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            content: "",
-        }
-    });
-
-    const isLoading = form.formState.isSubmitting;
-
-    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const handleSubmit = async ({ body }: { body: string }) => {
         try {
+
+            setIsPending(true);
+            editorRef?.current?.enable(false);
+
             const url = qs.stringifyUrl({
                 url: apiUrl,
                 query,
             });
 
-            await axios.post(url, values);
+            await axios.post(url, body);
 
-            form.reset();
+            setEditorKey((prevKey) => prevKey + 1);
+
             router.refresh();
         } catch (error) {
             console.log(error);
+        } finally {
+            setIsPending(false);
+            editorRef?.current?.enable(true);
         }
     }
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-                <FormField
-                    control={form.control}
-                    name="content"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                                <div className="relative p-4 pb-6">
-                                    <button
-                                        type="button"
-                                        onClick={() => onOpen("messageFile", { apiUrl, query })}
-                                        className="absolute top-7 left-8 h-[24px] w-[24px] bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full p-1 flex items-center justify-center"
-                                    >
-                                        <Plus className="text-white dark:text-[#313338]" />
-                                    </button>
-                                    <Input
-                                        disabled={isLoading}
-                                        className="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
-                                        placeholder={`Message ${type === "conversation" ? name : "#" + name}`}
-                                        autoComplete="off"
-                                        {...field}
-                                    />
-                                    <button
-                                        type="submit"
-                                        className="absolute top-7 right-8 h-[24px] w-[24px] bg-sky-500 hover:bg-sky-600 transition rounded-full p-1 flex items-center justify-center"
-                                        disabled={isLoading}
-                                    >
-                                        <Send className="text-white" />
-                                    </button>
-                                </div>
-                            </FormControl>
-                        </FormItem>
-                    )}
-                />
-            </form>
-        </Form>
+        <div className="px-5 w-full">
+            <Editor
+                key={editorKey}
+                placeholder={`Message ${type === "conversation" ? name : "#" + name}`}
+                onSubmit={handleSubmit}
+                disabled={isPending}
+                innerRef={editorRef}
+            />
+        </div>
     )
 }
