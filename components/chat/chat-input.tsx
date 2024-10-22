@@ -42,13 +42,22 @@ export const ChatInput = ({
                 query,
             });
 
-            await axios.post(url, body);
+            await axios.post(url, { content: body }, { // 修改这里
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
 
             setEditorKey((prevKey) => prevKey + 1);
 
             router.refresh();
         } catch (error) {
-            console.log(error);
+            if (axios.isAxiosError(error)) {
+                console.error("Error response:", error.response?.data);
+            } else {
+                console.error("Unexpected error:", error);
+            }
         } finally {
             setIsPending(false);
             editorRef?.current?.enable(true);

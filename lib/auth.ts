@@ -1,10 +1,8 @@
 import { db } from '@/lib/db'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { nanoid } from 'nanoid'
-import { NextApiRequest, NextApiResponse } from 'next'
 import { NextAuthOptions, getServerSession } from 'next-auth'
 import GithubProvider from 'next-auth/providers/github'
-import { NextRequest, NextResponse } from 'next/server'
 
 export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(db),

@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useRef, ElementRef } from "react";
-import { format } from "date-fns";
+import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 import { Member, Message, User } from "@prisma/client";
 import { Loader2, ServerCrash } from "lucide-react";
 
@@ -11,7 +11,12 @@ import { useChatScroll } from "@/hooks/use-chat-scroll";
 
 import { ChatItem } from "./chat-item";
 
-const DATE_FORMAT = "d MMM yyyy, HH:mm";
+const formatDateLabel = (dateStr: string) => {
+    const date = new Date(dateStr);
+    if (isToday(date)) return "Today";
+    if (isYesterday(date)) return "Yesterday";
+    return format(date, "EEEE, MMMM d");
+};
 
 type MessageWithMemberWithuser = Message & {
     member: Member & {
@@ -116,7 +121,8 @@ export const ChatMessages = ({
                                 member={message.member}
                                 content={message.content}
                                 deleted={message.deleted}
-                                timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
+                                createdAt={message.createdAt}
+                                updatedAt={message.updatedAt}
                                 isUpdated={message.updatedAt !== message.createdAt}
                                 socketUrl={socketUrl}
                                 socketQuery={socketQuery}

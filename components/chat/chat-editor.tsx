@@ -205,7 +205,7 @@ const Editor = ({
                             <Smile className="size-4" />
                         </Button>
                     </EmojiPopover>
-                    {variant === "create" && (
+                    {/* {variant === "create" && (
                         <Hint label="Image">
                             <Button
                                 disabled={disabled}
@@ -216,7 +216,7 @@ const Editor = ({
                                 <ImageIcon className="size-4" />
                             </Button>
                         </Hint>
-                    )}
+                    )} */}
                     {variant === "update" && (
                         <div className="ml-auto flex items-center gap-x-2">
                             <Button

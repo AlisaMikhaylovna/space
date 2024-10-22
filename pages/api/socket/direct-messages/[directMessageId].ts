@@ -4,6 +4,7 @@ import { MemberRole } from "@prisma/client";
 import { NextApiResponseServerIo } from "@/types";
 import { currentUser } from "@/lib/current-user";
 import { db } from "@/lib/db";
+import { currentUserServer } from "@/lib/current-user-server";
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,7 +15,7 @@ export default async function handler(
   }
 
   try {
-    const user = await currentUser();
+    const user = await currentUserServer(req, res);
     const { directMessageId, conversationId } = req.query;
     const { content } = req.body;
 

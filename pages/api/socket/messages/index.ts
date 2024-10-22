@@ -1,7 +1,7 @@
 import { NextApiRequest } from "next";
 
 import { NextApiResponseServerIo } from "@/types";
-import { currentUser } from "@/lib/current-user";
+import { currentUserServer } from "@/lib/current-user-server";
 import { db } from "@/lib/db";
 
 export default async function handler(
@@ -13,8 +13,8 @@ export default async function handler(
     }
 
     try {
-        const user = await currentUser();
-        const { content, fileUrl } = req.body;
+        const user = await currentUserServer(req, res);
+        const { content } = req.body;
         const { serverId, channelId } = req.query;
 
         if (!user) {
@@ -71,7 +71,6 @@ export default async function handler(
         const message = await db.message.create({
             data: {
                 content,
-                fileUrl,
                 channelId: channelId as string,
                 memberId: member.id,
             },

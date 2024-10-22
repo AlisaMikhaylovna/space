@@ -133,24 +133,29 @@ model Channel {
 }
 
 model Message {
-  id      String @id @default(uuid())
-  content String @db.Text
-
+  id      String  @id @default(uuid())
+  content String  @db.Text
   fileUrl String? @db.Text
 
   memberId String
   member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
-  channelId String
-  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channelId String?
+  channel   Channel? @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  parentMessageId String?
+  parentMessage   Message? @relation("ParentMessage", fields: [parentMessageId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
   deleted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  replies Message[] @relation("ParentMessage")
+
   @@index([channelId])
   @@index([memberId])
+  @@index([parentMessageId])
 }
 
 model Conversation {
