@@ -4,7 +4,7 @@ import { Message } from "@prisma/client";
 import { currentUser } from "@/lib/current-user";
 import { db } from "@/lib/db";
 
-const MESSAGES_BATCH = 10;
+const MESSAGES_BATCH = 30;
 
 export async function GET(
     req: Request
@@ -15,6 +15,7 @@ export async function GET(
 
         const cursor = searchParams.get("cursor");
         const channelId = searchParams.get("channelId");
+        const deleted = false;
 
         if (!user) {
             return new NextResponse("Unauthorized", { status: 401 });
@@ -35,6 +36,7 @@ export async function GET(
                 },
                 where: {
                     channelId,
+                    deleted
                 },
                 include: {
                     member: {
@@ -52,6 +54,7 @@ export async function GET(
                 take: MESSAGES_BATCH,
                 where: {
                     channelId,
+                    deleted
                 },
                 include: {
                     member: {

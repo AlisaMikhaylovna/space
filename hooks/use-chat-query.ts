@@ -8,13 +8,15 @@ interface ChatQueryProps {
     apiUrl: string;
     paramKey: "channelId" | "conversationId";
     paramValue: string;
+    initialLimit: number;
 };
 
 export const useChatQuery = ({
     queryKey,
     apiUrl,
     paramKey,
-    paramValue
+    paramValue,
+    initialLimit = 20
 }: ChatQueryProps) => {
     const { isConnected } = useSocket();
 
@@ -24,6 +26,7 @@ export const useChatQuery = ({
             query: {
                 cursor: pageParam,
                 [paramKey]: paramValue,
+                limit: pageParam ? 50 : initialLimit,
             }
         }, { skipNull: true });
 

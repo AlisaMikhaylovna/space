@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 
 import { useModal } from "@/hooks/use-modal-store";
 import Quill from "quill";
+import { ActionTooltip } from "../action-tooltip";
 
 const Editor = dynamic(() => import("@/components/chat/chat-editor"), { ssr: false });
 const Renderer = dynamic(() => import("@/components/renderer"), { ssr: false });
@@ -35,8 +36,7 @@ interface ChatItemProps {
   member: Member & {
     user: User;
   };
-  createdAt: Date,
-  updatedAt: Date
+  createdAt: Date;
   deleted: boolean;
   currentMember: Member;
   isUpdated: boolean;
@@ -65,7 +65,6 @@ export const ChatItem = ({
   content,
   member,
   createdAt,
-  updatedAt,
   deleted,
   currentMember,
   isUpdated,
@@ -185,7 +184,7 @@ export const ChatItem = ({
             ) : (
               <div className="flex flex-col w-full">
                 <Renderer value={content} />
-                {updatedAt ? (
+                {isUpdated && !deleted ? (
                   <span className="text-xs text-muted-foreground">
                     (edited)
                   </span>
@@ -202,7 +201,8 @@ export const ChatItem = ({
           </div>
           {!isEditing && (
             <Toolbar
-              isAuthor={isOwner}
+              canDeleteMessage={canDeleteMessage}
+              canEditMessage={canEditMessage}
               isPending={isPending}
               handleEdit={() => setIsEditing(true)}
               handleThread={() => onOpenMessage(id)}
@@ -240,10 +240,13 @@ export const ChatItem = ({
             </div>
           ) : (
             <div className="flex flex-col w-full overflow-hidden">
-              <div className="text-sm">
+              <div className="text-sm flex">
                 <button onClick={() => onOpenProfile(member.id)} className="font-bold text-primary hover:underline">
                   {member.user.name}
                 </button>
+                <ActionTooltip label={member.role}>
+                  {roleIconMap[member.role]}
+                </ActionTooltip>
                 <span>&nbsp;&nbsp;</span>
                 <Hint label={formatFullTime(new Date(createdAt))}>
                   <button className="text-xs text-muted-foreground hover:underline">
@@ -252,7 +255,7 @@ export const ChatItem = ({
                 </Hint>
               </div>
               <Renderer value={content} />
-              {updatedAt ? (
+              {isUpdated && !deleted ? (
                 <span className="text-xs text-muted-foreground">(edited)</span>
               ) : null}
               <ThreadBar
@@ -267,7 +270,8 @@ export const ChatItem = ({
         </div>
         {!isEditing && (
           <Toolbar
-            isAuthor={isOwner}
+            canDeleteMessage={canDeleteMessage}
+            canEditMessage={canEditMessage}
             isPending={isPending}
             handleEdit={() => setIsEditing(true)}
             handleThread={() => onOpenMessage(id)}

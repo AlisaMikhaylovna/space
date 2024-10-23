@@ -2,7 +2,6 @@ import { NextApiRequest } from "next";
 import { MemberRole } from "@prisma/client";
 
 import { NextApiResponseServerIo } from "@/types";
-import { currentUser } from "@/lib/current-user";
 import { db } from "@/lib/db";
 import { currentUserServer } from "@/lib/current-user-server";
 
@@ -101,7 +100,7 @@ export default async function handler(
         },
         data: {
           fileUrl: null,
-          content: "This message has been deleted.",
+          content: '{}',
           deleted: true,
         },
         include: {

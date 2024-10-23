@@ -4,7 +4,8 @@ import { Hint } from "./hint";
 import { Button } from "./ui/button";
 
 interface ToolbarProps {
-    isAuthor: boolean;
+    canDeleteMessage: boolean;
+    canEditMessage: boolean;
     isPending: boolean;
     handleEdit: () => void;
     handleThread: () => void;
@@ -13,7 +14,8 @@ interface ToolbarProps {
 };
 
 export const Toolbar = ({
-    isAuthor,
+    canDeleteMessage,
+    canEditMessage,
     isPending,
     handleEdit,
     handleThread,
@@ -23,7 +25,7 @@ export const Toolbar = ({
     return (
         <div className="absolute top-0 right-5">
             <div className="group-hover:opacity-100 opacity-0 transition-opacity border bg-white rounded-md shadow-sm">
-                {!hideThreadButton && (
+                {canDeleteMessage && !hideThreadButton && (
                     <Hint label="Reply in thread">
                         <Button
                             variant="ghost"
@@ -35,7 +37,7 @@ export const Toolbar = ({
                         </Button>
                     </Hint>
                 )}
-                {isAuthor && (
+                {canEditMessage && (
                     <Hint label="Edit message">
                         <Button
                             variant="ghost"
@@ -47,7 +49,7 @@ export const Toolbar = ({
                         </Button>
                     </Hint>
                 )}
-                {isAuthor && (
+                {canDeleteMessage && (
                     <Hint label="Delete message">
                         <Button
                             variant="ghost"

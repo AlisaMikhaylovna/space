@@ -25,7 +25,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useModal } from "@/hooks/use-modal-store";
-import { ServerWithMembersWithusers } from "@/types";
+import { ServerWithMembersWithUsers } from "@/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserAvatar } from "@/components/user-avatar";
 import {
@@ -54,7 +54,7 @@ export const MembersModal = () => {
   const { loginToast } = useCustomToasts();
 
   const isModalOpen = isOpen && type === "members";
-  const { server } = data as { server: ServerWithMembersWithusers };
+  const { server } = data as { server: ServerWithMembersWithUsers };
 
   const onKick = async (memberId: string) => {
     try {
