@@ -30,7 +30,6 @@ type MessageWithMemberWithUser = Message & {
     threadTimestamp?: number;
 };
 
-
 interface ChatMessagesProps {
     member: Member;
     chatId: string;

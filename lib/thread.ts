@@ -1,23 +1,10 @@
-import { db } from "./db";
-
-const populateMember = async (memeberId: string) => {
-    const member = await db.member.findUnique({
-        where: { id: memeberId }
-    })
-    return member;
-}
-
-const populateUser = async (userId: string) => {
-    const user = await db.user.findUnique({
-        where: { id: userId }
-    })
-    return user;
-}
+import { db } from "@/lib/db";
 
 export const populateThread = async (messageId: string) => {
     const messages = await db.message.findMany({
         where: { parentMessageId: messageId }
-    })
+    });
+
     if (messages.length === 0) {
         return {
             count: 0,
@@ -26,10 +13,14 @@ export const populateThread = async (messageId: string) => {
             name: "",
         };
     }
-    const lastMessage = messages[messages.length - 1];
-    const lastMessageMember = await populateMember(lastMessage.memberId);
 
-    if (!lastMessageMember) {
+    const lastMessage = messages[messages.length - 1];
+    const lastMessageMember = await db.member.findUnique({
+        where: { id: lastMessage.memberId },
+        include: { user: true }
+    });
+
+    if (!lastMessageMember || !lastMessageMember.user) {
         return {
             count: 0,
             image: undefined,
@@ -38,12 +29,10 @@ export const populateThread = async (messageId: string) => {
         };
     }
 
-    const lastMessageUser = await populateUser(lastMessageMember.userId);
-
     return {
         count: messages.length,
-        image: undefined,
+        image: lastMessageMember.user.image,
         timestamp: lastMessage.createdAt.getTime(),
-        name: lastMessageUser?.name,
+        name: lastMessageMember.user.name,
     };
 }

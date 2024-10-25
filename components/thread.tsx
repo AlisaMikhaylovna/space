@@ -13,6 +13,7 @@ import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 import { useChatQuery } from "@/hooks/use-chat-query";
 import { useChatSocket } from "@/hooks/use-chat-socket";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
+import { useRouter } from "next/navigation";
 
 import { Member, Message, User } from "@prisma/client";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,6 @@ import { ChatItem } from "@/components/chat/chat-item";
 const Editor = dynamic(() => import("@/components/chat/chat-editor"), { ssr: false });
 
 const TIME_THRESHOLD = 5;
-
 
 type MessageWithMemberWithUser = Message & {
     member: Member & {
@@ -42,7 +42,6 @@ interface ThreadProps {
     messageId: string;
     onClose: () => void;
 };
-
 
 const formatDateLabel = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -70,6 +69,8 @@ export const Thread = ({
 
     const chatRef = useRef<ElementRef<"div">>(null);
     const bottomRef = useRef<ElementRef<"div">>(null);
+
+    const router = useRouter();
 
     const [editorKey, setEditorKey] = useState(0);
     const [isPending, setIsPending] = useState(false);
@@ -118,6 +119,8 @@ export const Thread = ({
             });
 
             setEditorKey((prevKey) => prevKey + 1);
+
+            router.refresh();
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error("Error response:", error.response?.data);

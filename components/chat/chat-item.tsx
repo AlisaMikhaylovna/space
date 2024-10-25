@@ -1,6 +1,5 @@
 "use client";
 
-
 import axios from "axios";
 import qs from "query-string";
 
@@ -150,13 +149,11 @@ export const ChatItem = ({
     }
   }
 
-
   const isAdmin = currentMember.role === MemberRole.ADMIN;
   const isModerator = currentMember.role === MemberRole.MODERATOR;
   const isOwner = currentMember.id === member.id;
   const canDeleteMessage = !deleted && (isAdmin || isModerator || isOwner);
   const canEditMessage = !deleted && isOwner;
-
 
   if (isCompact) {
     return (
@@ -276,7 +273,6 @@ export const ChatItem = ({
             handleEdit={() => setIsEditing(true)}
             handleThread={() => onOpenMessage(id)}
             handleDelete={handleRemove}
-            hideThreadButton={hideThreadButton}
           />
         )}
       </div>

@@ -16,7 +16,6 @@ interface ChatInputProps {
     type?: "conversation" | "channel";
 }
 
-
 export const ChatInput = ({
     apiUrl,
     query,
@@ -42,12 +41,11 @@ export const ChatInput = ({
                 query,
             });
 
-            await axios.post(url, { content: body }, { // 修改这里
+            await axios.post(url, { content: body }, {
                 headers: {
                     'Content-Type': 'application/json',
                 }
             });
-
 
             setEditorKey((prevKey) => prevKey + 1);
 

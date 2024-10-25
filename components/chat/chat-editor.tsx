@@ -3,7 +3,7 @@ import { Delta, Op } from "quill/core";
 import { MdSend } from "react-icons/md";
 import { PiTextAa } from "react-icons/pi";
 import Quill, { type QuillOptions } from "quill";
-import { ImageIcon, Smile, XIcon } from "lucide-react";
+import { Smile, XIcon } from "lucide-react";
 import { MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
