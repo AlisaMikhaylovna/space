@@ -24,7 +24,12 @@ type MessageWithMemberWithUser = Message & {
     member: Member & {
         user: User;
     };
+    threadCount?: number;
+    threadImage?: string;
+    threadName?: string;
+    threadTimestamp?: number;
 };
+
 
 interface ChatMessagesProps {
     member: Member;
@@ -34,6 +39,7 @@ interface ChatMessagesProps {
     socketQuery: Record<string, string>;
     paramKey: "channelId" | "conversationId";
     paramValue: string;
+    variant?: "channel" | "thread" | "conversation";
 }
 
 export const ChatMessages = ({
@@ -44,6 +50,7 @@ export const ChatMessages = ({
     socketQuery,
     paramKey,
     paramValue,
+    variant = "channel"
 }: ChatMessagesProps) => {
     const queryKey = `chat:${chatId}`;
     const addKey = `chat:${chatId}:messages`;
@@ -128,7 +135,7 @@ export const ChatMessages = ({
             )}
             <div className="flex flex-col-reverse mt-auto">
                 {Object.entries(groupedMessages || {}).map(([dateKey, messages]) => {
-                    // 强制类型转换为 MessageWithMemberWithUser[]
+
                     const sortedMessages = (messages as MessageWithMemberWithUser[]).sort((a, b) =>
                         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
                     );
@@ -163,6 +170,11 @@ export const ChatMessages = ({
                                         socketUrl={socketUrl}
                                         socketQuery={socketQuery}
                                         isCompact={isCompact}
+                                        hideThreadButton={variant === "thread"}
+                                        threadCount={message.threadCount}
+                                        threadImage={message.threadImage}
+                                        threadName={message.threadName}
+                                        threadTimestamp={message.threadTimestamp}
                                     />
                                 );
                             })}

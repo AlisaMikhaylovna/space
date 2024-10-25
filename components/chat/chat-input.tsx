@@ -12,8 +12,8 @@ import Editor from "./chat-editor";
 interface ChatInputProps {
     apiUrl: string;
     query: Record<string, any>;
-    name: string;
-    type: "conversation" | "channel";
+    name?: string;
+    type?: "conversation" | "channel";
 }
 
 

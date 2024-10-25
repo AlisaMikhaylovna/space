@@ -28,6 +28,10 @@ const ChannelIdPage = async ({
         },
     });
 
+    const server = await db.server.findUnique({
+        where: { id: params.serverId }
+    })
+
     const member = await db.member.findFirst({
         where: {
             serverId: params.serverId,
@@ -35,14 +39,14 @@ const ChannelIdPage = async ({
         }
     });
 
-    if (!channel || !member) {
+    if (!server || !channel || !member) {
         redirect("/");
     }
 
     return (
         <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
             <ChatHeader
-                name={channel.name}
+                name={server.name}
                 serverId={channel.serverId}
                 type="channel"
             />

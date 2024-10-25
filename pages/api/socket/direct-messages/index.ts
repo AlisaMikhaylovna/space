@@ -13,7 +13,7 @@ export default async function handler(
   }
 
   try {
-    const user = await currentUserServer(req,res);
+    const user = await currentUserServer(req, res);
     const { content } = req.body;
     const { conversationId } = req.query;
 

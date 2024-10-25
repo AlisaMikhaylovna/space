@@ -1,38 +1,48 @@
+"use client"
+
 import Quill from "quill";
-import { toast } from "@/hooks/use-toast";
 import dynamic from "next/dynamic";
-import { useRef, useState } from "react";
-import { AlertTriangle, Loader, XIcon } from "lucide-react";
+import axios from "axios";
+import qs from "query-string";
+
+import { useRef, useState, ElementRef } from "react";
+
+import { AlertTriangle, Loader, Loader2, XIcon } from "lucide-react";
 import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 
-// import { useGetMessage } from "@/features/messages/api/use-get-message";
-// import { useGetMessages } from "@/features/messages/api/use-get-messages";
-// import { useCurrentMember } from "@/features/members/api/use-current-member";
-// import { useCreateMessage } from "@/features/messages/api/use-create-message";
+import { useChatQuery } from "@/hooks/use-chat-query";
+import { useChatSocket } from "@/hooks/use-chat-socket";
+import { useChatScroll } from "@/hooks/use-chat-scroll";
 
-// import { Button } from "@/components/ui/button";
-// import { ChatItem } from "@/components/chat/chat-item";
-// import { useChannelId } from "@/hooks/use-channel-id";
-// import { useWorkspaceId } from "@/hooks/use-workspace-id";
-
-// import { Id } from "../../../../convex/_generated/dataModel";
+import { Member, Message, User } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import { ChatItem } from "@/components/chat/chat-item";
 
 const Editor = dynamic(() => import("@/components/chat/chat-editor"), { ssr: false });
 
 const TIME_THRESHOLD = 5;
 
+
+type MessageWithMemberWithUser = Message & {
+    member: Member & {
+        user: User;
+    };
+};
+
 interface ThreadProps {
-    messageId: Id<"messages">;
+    member: Member;
+    chatId: string;
+    inputUrl: string;
+    query: Record<string, string>;
+    apiUrl: string;
+    socketUrl: string;
+    socketQuery: Record<string, string>;
+    paramKey: "channelId" | "conversationId";
+    paramValue: string;
+    messageId: string;
     onClose: () => void;
 };
 
-type CreateMesageValues = {
-    channelId: Id<"channels">;
-    workspaceId: Id<"workspaces">;
-    parentMessageId: Id<"messages">;
-    body: string;
-    image: Id<"_storage"> | undefined;
-};
 
 const formatDateLabel = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -41,99 +51,90 @@ const formatDateLabel = (dateStr: string) => {
     return format(date, "EEEE, MMMM d");
 };
 
-export const Thread = ({ messageId, onClose }: ThreadProps) => {
-    const channelId = useChannelId();
-    const workspaceId = useWorkspaceId();
+export const Thread = ({
+    member,
+    chatId,
+    inputUrl,
+    query,
+    apiUrl,
+    socketUrl,
+    socketQuery,
+    paramKey,
+    paramValue,
+    messageId,
+    onClose
+}: ThreadProps) => {
+    const queryKey = `chat:${messageId}`;
+    const addKey = `chat:${messageId}:messages`;
+    const updateKey = `chat:${chatId}:messages:update`;
 
-    const [editingId, setEditingId] = useState<Id<"messages"> | null>(null);
+    const chatRef = useRef<ElementRef<"div">>(null);
+    const bottomRef = useRef<ElementRef<"div">>(null);
+
     const [editorKey, setEditorKey] = useState(0);
     const [isPending, setIsPending] = useState(false);
 
     const editorRef = useRef<Quill | null>(null);
 
-    const { mutate: createMessage } = useCreateMessage();
-    const { mutate: generateUploadUrl } = useGenerateUploadUrl();
-
-    const { data: currentMember } = useCurrentMember({ workspaceId });
-    const { data: message, isLoading: loadingMessage } = useGetMessage({ id: messageId });
-    const { results, status, loadMore } = useGetMessages({
-        channelId,
-        parentMessageId: messageId,
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        status,
+    } = useChatQuery({
+        queryKey,
+        apiUrl,
+        paramKey,
+        paramValue,
+        initialLimit: 50
     });
 
-    const canLoadMore = status === "CanLoadMore";
-    const isLoadingMore = status === "LoadingMore";
+    useChatSocket({ queryKey, addKey, updateKey });
 
-    const handleSubmit = async ({
-        body,
-        image
-    }: {
-        body: string;
-        image: File | null;
-    }) => {
+    useChatScroll({
+        chatRef,
+        bottomRef,
+        loadMore: fetchNextPage,
+        shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
+        count: data?.pages?.[0]?.items?.length ?? 0,
+    });
+
+    const handleSubmit = async ({ body }: { body: string }) => {
         try {
+
             setIsPending(true);
             editorRef?.current?.enable(false);
 
-            const values: CreateMesageValues = {
-                channelId,
-                workspaceId,
-                parentMessageId: messageId,
-                body,
-                image: undefined,
-            };
+            const url = qs.stringifyUrl({
+                url: inputUrl,
+                query
+            });
 
-            if (image) {
-                const url = await generateUploadUrl({}, { throwError: true });
-
-                if (!url) {
-                    throw new Error("Url not found");
+            await axios.post(url, { content: body }, {
+                headers: {
+                    'Content-Type': 'application/json',
                 }
-
-                const result = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": image.type },
-                    body: image,
-                });
-
-                if (!result.ok) {
-                    throw new Error("Failed to upload image");
-                }
-
-                const { storageId } = await result.json();
-
-                values.image = storageId;
-            }
-
-            await createMessage(values, { throwError: true });
+            });
 
             setEditorKey((prevKey) => prevKey + 1);
         } catch (error) {
-            toast.error("Failed to send message");
+            if (axios.isAxiosError(error)) {
+                console.error("Error response:", error.response?.data);
+            } else {
+                console.error("Unexpected error:", error);
+            }
         } finally {
             setIsPending(false);
             editorRef?.current?.enable(true);
         }
-    };
+    }
 
-    const groupedMessages = results?.reduce(
-        (groups, message) => {
-            const date = new Date(message._creationTime);
-            const dateKey = format(date, "yyyy-MM-dd");
-            if (!groups[dateKey]) {
-                groups[dateKey] = [];
-            }
-            groups[dateKey].unshift(message);
-            return groups;
-        },
-        {} as Record<string, typeof results>
-    );
-
-    if (loadingMessage || status === "LoadingFirstPage") {
+    if (status === "pending") {
         return (
             <div className="h-full flex flex-col">
                 <div className="h-[49px] flex justify-between items-center px-4 border-b">
-                    <p className="text-lg font-bold">Thread</p>
+                    <p className="text-lg font-bold">Replies</p>
                     <Button onClick={onClose} size="iconSm" variant="ghost">
                         <XIcon className="size-5 stroke-[1.5]" />
                     </Button>
@@ -145,11 +146,11 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
         );
     }
 
-    if (!message) {
+    if (status === "error") {
         return (
             <div className="h-full flex flex-col">
                 <div className="h-[49px] flex justify-between items-center px-4 border-b">
-                    <p className="text-lg font-bold">Thread</p>
+                    <p className="text-lg font-bold">Replies</p>
                     <Button onClick={onClose} size="iconSm" variant="ghost">
                         <XIcon className="size-5 stroke-[1.5]" />
                     </Button>
@@ -162,110 +163,99 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
         );
     }
 
+    const groupedMessages = data?.pages?.reduce((acc, group) => {
+        group.items.forEach((message: MessageWithMemberWithUser) => {
+            const dateKey = format(new Date(message.createdAt), "yyyy-MM-dd");
+            if (!acc[dateKey]) {
+                acc[dateKey] = [];
+            }
+            acc[dateKey].push(message);
+        });
+        return acc;
+    }, {} as Record<string, MessageWithMemberWithUser[]>);
+
     return (
-        <div className="h-full flex flex-col">
-            <div className="h-[49px] flex justify-between items-center px-4 border-b">
-                <p className="text-lg font-bold">Thread</p>
+        <div ref={chatRef} className="flex-1 flex flex-col py-4 overflow-y-auto">
+            <div className="mt-10 h-[49px] flex justify-between items-center px-4 border-b">
+                <p className="text-lg font-bold">Replies</p>
                 <Button onClick={onClose} size="iconSm" variant="ghost">
                     <XIcon className="size-5 stroke-[1.5]" />
                 </Button>
             </div>
-            <div className="flex-1 flex flex-col-reverse pb-4 overflow-y-auto messages-scrollbar">
-                {Object.entries(groupedMessages || {}).map(([dateKey, messages]) => (
-                    <div key={dateKey}>
-                        <div className="text-center my-2 relative">
-                            <hr className="absolute top-1/2 left-0 right-0 border-t border-gray-300" />
-                            <span className="relative inline-block bg-white px-4 py-1 rounded-full text-xs border border-gray-300 shadow-sm">
-                                {formatDateLabel(dateKey)}
-                            </span>
+
+            {!hasNextPage && <div className="flex-1" />}
+
+            {hasNextPage && (
+                <div className="flex justify-center">
+                    {isFetchingNextPage ? (
+                        <Loader2 className="h-6 w-6 text-zinc-500 animate-spin my-4" />
+                    ) : (
+                        <button
+                            onClick={() => fetchNextPage()}
+                            className="text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 text-xs my-4 dark:hover:text-zinc-300 transition"
+                        >
+                            Load previous messages
+                        </button>
+                    )}
+                </div>
+            )}
+
+            <div className="flex flex-col-reverse mt-auto">
+                {Object.entries(groupedMessages || {}).map(([dateKey, messages]) => {
+                    const sortedMessages = (messages as MessageWithMemberWithUser[]).sort((a, b) =>
+                        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+                    );
+
+                    return (
+                        <div key={dateKey}>
+                            <div className="text-center my-2 relative">
+                                <hr className="absolute top-1/2 left-0 right-0 border-t border-gray-300" />
+                                <span className="relative inline-block bg-white px-4 py-1 rounded-full text-xs border border-gray-300 shadow-sm">
+                                    {formatDateLabel(dateKey)}
+                                </span>
+                            </div>
+                            {sortedMessages.map((message: MessageWithMemberWithUser, index: number) => {
+                                const prevMessage = sortedMessages[index - 1];
+                                const isCompact =
+                                    prevMessage &&
+                                    prevMessage.member.id === message.member.id &&
+                                    differenceInMinutes(
+                                        new Date(message.createdAt),
+                                        new Date(prevMessage.createdAt)
+                                    ) < TIME_THRESHOLD;
+
+                                return (
+                                    <ChatItem
+                                        key={message.id}
+                                        id={message.id}
+                                        currentMember={member}
+                                        member={message.member}
+                                        content={message.content}
+                                        deleted={message.deleted}
+                                        createdAt={message.createdAt}
+                                        isUpdated={message.updatedAt !== message.createdAt}
+                                        socketUrl={socketUrl}
+                                        socketQuery={socketQuery}
+                                        isCompact={isCompact}
+                                        hideThreadButton
+                                    />
+                                );
+                            })}
                         </div>
-                        {messages.map((message, index) => {
-                            const prevMessage = messages[index - 1];
-                            const isCompact =
-                                prevMessage &&
-                                prevMessage.user?._id === message.user?._id &&
-                                differenceInMinutes(
-                                    new Date(message._creationTime),
-                                    new Date(prevMessage._creationTime)
-                                ) < TIME_THRESHOLD;
-
-                            return (
-                                <ChatItem
-                                    key={message._id}
-                                    id={message._id}
-                                    memberId={message.memberId}
-                                    authorImage={message.user.image}
-                                    authorName={message.user.name}
-                                    isAuthor={message.memberId === currentMember?._id}
-                                    reactions={message.reactions}
-                                    body={message.body}
-                                    image={message.image}
-                                    updatedAt={message.updatedAt}
-                                    createdAt={message._creationTime}
-                                    isEditing={editingId === message._id}
-                                    setEditingId={setEditingId}
-                                    isCompact={isCompact}
-                                    hideThreadButton
-                                    threadCount={message.threadCount}
-                                    threadImage={message.threadImage}
-                                    threadName={message.threadName}
-                                    threadTimestamp={message.threadTimestamp}
-                                />
-                            )
-                        })}
-                    </div>
-                ))}
-                <div
-                    className="h-1"
-                    ref={(el) => {
-                        if (el) {
-                            const observer = new IntersectionObserver(
-                                ([entry]) => {
-                                    if (entry.isIntersecting && canLoadMore) {
-                                        loadMore();
-                                    }
-                                },
-                                { threshold: 1.0 }
-                            );
-
-                            observer.observe(el);
-                            return () => observer.disconnect();
-                        }
-                    }}
-                />
-                {isLoadingMore && (
-                    <div className="text-center my-2 relative">
-                        <hr className="absolute top-1/2 left-0 right-0 border-t border-gray-300" />
-                        <span className="relative inline-block bg-white px-4 py-1 rounded-full text-xs border border-gray-300 shadow-sm">
-                            <Loader className="size-4 animate-spin" />
-                        </span>
-                    </div>
-                )}
-                <ChatItem
-                    hideThreadButton
-                    memberId={message.memberId}
-                    authorImage={message.user.image}
-                    authorName={message.user.name}
-                    isAuthor={message.memberId === currentMember?._id}
-                    body={message.body}
-                    image={message.image}
-                    createdAt={message._creationTime}
-                    updatedAt={message.updatedAt}
-                    id={message._id}
-                    reactions={message.reactions}
-                    isEditing={editingId === message._id}
-                    setEditingId={setEditingId}
-                />
+                    );
+                })}
             </div>
-            <div className="px-4">
+            <div className=" px-2 fixed bottom-2">
                 <Editor
                     key={editorKey}
-                    onSubmit={handleSubmit}
-                    innerRef={editorRef}
-                    disabled={isPending}
                     placeholder="Reply.."
+                    onSubmit={handleSubmit}
+                    disabled={isPending}
+                    innerRef={editorRef}
                 />
             </div>
+
+            <div ref={bottomRef} />
         </div>
     );
 };

@@ -144,18 +144,16 @@ model Message {
   channel   Channel? @relation(fields: [channelId], references: [id], onDelete: Cascade)
 
   parentMessageId String?
-  parentMessage   Message? @relation("ParentMessage", fields: [parentMessageId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
   deleted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  replies Message[] @relation("ParentMessage")
-
   @@index([channelId])
   @@index([memberId])
   @@index([parentMessageId])
+  @@index([channelId, parentMessageId])
 }
 
 model Conversation {

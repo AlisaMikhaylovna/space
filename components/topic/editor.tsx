@@ -9,7 +9,7 @@ import TextareaAutosize from 'react-textarea-autosize'
 import { z } from 'zod'
 
 import { toast } from '@/hooks/use-toast'
-import { uploadFiles } from '@/lib/uploadthing'
+
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 
@@ -110,24 +110,6 @@ export const Editor = ({ subredditId }: EditorProps) => {
                         config: {
                             endpoint: '/api/link',
                         },
-                    },
-                    image: {
-                        class: ImageTool,
-                        config: {
-                            uploader: {
-                                async uploadByFile(file: File) {
-                                    const res = await uploadFiles('imageUploader', { files: [file] });
-
-                                    return {
-                                        success: 1,
-                                        file: {
-                                            url: res[0]?.url || '',
-                                        },
-                                    };
-                                },
-                            },
-                        },
-
                     },
                     list: List,
                     code: Code,

@@ -3,8 +3,9 @@ import { Message } from "@prisma/client";
 
 import { currentUser } from "@/lib/current-user";
 import { db } from "@/lib/db";
+import { populateThread } from "@/lib/thread";
 
-const MESSAGES_BATCH = 30;
+const MESSAGES_BATCH = 20;
 
 export async function GET(
     req: Request
@@ -36,7 +37,8 @@ export async function GET(
                 },
                 where: {
                     channelId,
-                    deleted
+                    deleted,
+                    parentMessageId: null
                 },
                 include: {
                     member: {
@@ -54,7 +56,8 @@ export async function GET(
                 take: MESSAGES_BATCH,
                 where: {
                     channelId,
-                    deleted
+                    deleted,
+                    parentMessageId: null
                 },
                 include: {
                     member: {
@@ -69,6 +72,14 @@ export async function GET(
             });
         }
 
+        const threads = await Promise.all(messages.map(async (message) => {
+            const thread = await populateThread(message.id);
+            return {
+                ...message,
+                thread
+            };
+        }));
+
         let nextCursor = null;
 
         if (messages.length === MESSAGES_BATCH) {
@@ -76,7 +87,7 @@ export async function GET(
         }
 
         return NextResponse.json({
-            items: messages,
+            items: threads,
             nextCursor
         });
     } catch (error) {
