@@ -124,6 +124,7 @@ export default async function handler(
         },
         data: {
           content,
+          updated: true
         },
         include: {
           member: {

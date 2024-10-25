@@ -236,7 +236,7 @@ export const Thread = ({
                                         content={message.content}
                                         deleted={message.deleted}
                                         createdAt={message.createdAt}
-                                        isUpdated={message.updatedAt !== message.createdAt}
+                                        isUpdated={message.updated}
                                         socketUrl={socketUrl}
                                         socketQuery={socketQuery}
                                         isCompact={isCompact}

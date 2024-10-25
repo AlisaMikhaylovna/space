@@ -84,6 +84,20 @@ export default async function handler(
             }
         });
 
+        const parentMessage = await db.message.update({
+            where: {
+                id: messageId as string,
+            },
+            data: {
+                threadCount: {
+                    increment: 1,
+                },
+                threadImage: user.image,
+                threadName: user.name,
+                threadTimestamp: message.createdAt,
+            }
+        })
+
         const channelKey = `chat:${messageId}:messages`;
 
         res?.socket?.server?.io?.emit(channelKey, message);

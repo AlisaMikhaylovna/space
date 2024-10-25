@@ -9,9 +9,10 @@ datasource db {
 }
 
 model User {
-  id    String  @id @default(cuid())
-  name  String? @unique
-  email String? @unique
+  id            String    @id @default(cuid())
+  name          String?   @unique
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified")
 
   subscriptions Subscription[]
   votes         Vote[]
@@ -145,7 +146,13 @@ model Message {
 
   parentMessageId String?
 
+  threadCount     Int?      @default(0)
+  threadImage     String?
+  threadTimestamp DateTime?
+  threadName      String?   @default("")
+
   deleted Boolean @default(false)
+  updated Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -153,7 +160,6 @@ model Message {
   @@index([channelId])
   @@index([memberId])
   @@index([parentMessageId])
-  @@index([channelId, parentMessageId])
 }
 
 model Conversation {
@@ -183,6 +189,7 @@ model DirectMessage {
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   deleted Boolean @default(false)
+  updated Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

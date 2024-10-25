@@ -3,7 +3,6 @@ import { Message } from "@prisma/client";
 
 import { currentUser } from "@/lib/current-user";
 import { db } from "@/lib/db";
-import { populateThread } from "@/lib/thread";
 
 const MESSAGES_BATCH = 20;
 
@@ -72,14 +71,6 @@ export async function GET(
             });
         }
 
-        const threads = await Promise.all(messages.map(async (message) => {
-            const thread = await populateThread(message.id);
-            return {
-                ...message,
-                thread
-            };
-        }));
-
         let nextCursor = null;
 
         if (messages.length === MESSAGES_BATCH) {
@@ -87,7 +78,7 @@ export async function GET(
         }
 
         return NextResponse.json({
-            items: threads,
+            items: messages,
             nextCursor
         });
     } catch (error) {

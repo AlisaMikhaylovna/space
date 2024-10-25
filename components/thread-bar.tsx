@@ -6,7 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 interface ThreadBarProps {
     count?: number;
     image?: string;
-    timestamp?: number;
+    timestamp?: Date;
     name?: string;
     onClick?: () => void;
 };

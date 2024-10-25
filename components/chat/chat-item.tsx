@@ -46,7 +46,7 @@ interface ChatItemProps {
   threadCount?: number;
   threadImage?: string;
   threadName?: string;
-  threadTimestamp?: number;
+  threadTimestamp?: Date;
 };
 
 const roleIconMap = {
@@ -273,6 +273,7 @@ export const ChatItem = ({
             handleEdit={() => setIsEditing(true)}
             handleThread={() => onOpenMessage(id)}
             handleDelete={handleRemove}
+            hideThreadButton={hideThreadButton}
           />
         )}
       </div>
