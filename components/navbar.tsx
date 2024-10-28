@@ -20,7 +20,7 @@ export const Navbar = async ({ serverId }: NavbarProps) => {
                 <div className='flex gap-4 items-center justify-center flex-grow md:mr-96'>
                     <Link className="transition-colors duration-200" href={`/servers/${serverId}/channels`}>Message</Link>
                     <Link className="transition-colors duration-200" href={`/servers/${serverId}/topics`}>Topic</Link>
-                    <Link className="transition-colors duration-200" href={`/servers/${serverId}/blog`}>Blog</Link>
+                    <Link className="transition-colors duration-200" href={`/servers/${serverId}/blog`}>Article</Link>
                 </div>
                 <div className='ml-auto'>
                     {user ? (
