@@ -40,11 +40,11 @@ export const NavigationItem = ({
           params?.serverId === id ? "h-[36px]" : "h-[8px]"
         )} />
         <div className={cn(
-          "relative group flex mx-3 h-[48px] w-[48px] rounded-[24px] group-hover:rounded-[16px] transition-all overflow-hidden",
+          "relative group flex mx-3 h-[48px] w-[48px] rounded-full items-center justify-center transition-all overflow-hidden",
           params?.serverId === id && "bg-primary/10 text-primary rounded-[16px]"
         )}>
-          <div className="shrink-0 size-9 relative overflow-hidden bg-[#616061] text-white font-semibold text-lg rounded-md flex items-center justify-center mr-2">
-            {(params?.serverId as string).charAt(0).toUpperCase()}
+          <div className="shrink-0 h-[36px] w-[36px] relative overflow-hidden bg-[#616061] text-white font-semibold text-lg rounded-full flex items-center justify-center">
+            {name.charAt(0).toUpperCase()}
           </div>
         </div>
       </button>

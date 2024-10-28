@@ -22,7 +22,7 @@ export const Profile = ({ member, onClose }: ProfileProps) => {
     return (
         <>
             <div className="h-full flex flex-col">
-                <div className="mt-14  h-[49px] flex justify-between items-center px-4 border-b">
+                <div className=" h-[49px] flex justify-between items-center px-4 border-b">
                     <p className="text-lg font-bold">Profile</p>
                     <Button onClick={onClose} size="iconSm" variant="ghost">
                         <XIcon className="size-5 stroke-[1.5]" />

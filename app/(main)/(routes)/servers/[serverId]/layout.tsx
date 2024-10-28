@@ -23,10 +23,10 @@ const ServerIdLayout = async ({
       id: params.serverId,
       members: {
         some: {
-          userId: user.id
-        }
-      }
-    }
+          userId: user.id,
+        },
+      },
+    },
   });
 
   if (!server) {
@@ -38,14 +38,14 @@ const ServerIdLayout = async ({
       <div className="hidden md:flex h-full w-60 z-20 flex-col fixed inset-y-0">
         <ServerSidebar serverId={params.serverId} />
       </div>
-      <div className="flex-grow md:pl-60">
+      <div className="flex-grow md:pl-60 flex flex-col">
         <Navbar serverId={params.serverId} />
-        <main className="h-full">
+        <main className="h-full flex-grow">
           {children}
         </main>
       </div>
     </div>
   );
-}
+};
 
 export default ServerIdLayout;

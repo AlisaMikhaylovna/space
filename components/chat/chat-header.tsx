@@ -17,7 +17,7 @@ export const ChatHeader = ({
   image
 }: ChatHeaderProps) => {
   return (
-    <div className="text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2 mt-14 cursor-default">
+    <div className="text-md font-semibold px-3 flex items-center  border-neutral-200 dark:border-neutral-800 border-b-2 py-2 cursor-default">
       {type === "conversation" && (
         <UserAvatar
           user={{ name: name || null, image: image || null }}

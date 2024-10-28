@@ -132,7 +132,6 @@ export const Thread = ({
             editorRef?.current?.enable(true);
         }
     }
-
     if (status === "pending") {
         return (
             <div className="h-full flex flex-col">
@@ -178,8 +177,8 @@ export const Thread = ({
     }, {} as Record<string, MessageWithMemberWithUser[]>);
 
     return (
-        <div ref={chatRef} className="flex-1 flex flex-col py-4 overflow-y-auto">
-            <div className="mt-10 h-[49px] flex justify-between items-center px-4 border-b">
+        <div ref={chatRef} className="flex flex-col h-full">
+            <div className=" h-[49px] flex justify-between items-center px-4 border-b">
                 <p className="text-lg font-bold">Replies</p>
                 <Button onClick={onClose} size="iconSm" variant="ghost">
                     <XIcon className="size-5 stroke-[1.5]" />
@@ -203,7 +202,7 @@ export const Thread = ({
                 </div>
             )}
 
-            <div className="flex flex-col-reverse mt-auto">
+            <div className="flex-1 flex flex-col-reverse pb-4  ">
                 {Object.entries(groupedMessages || {}).map(([dateKey, messages]) => {
                     const sortedMessages = (messages as MessageWithMemberWithUser[]).sort((a, b) =>
                         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
@@ -248,7 +247,8 @@ export const Thread = ({
                     );
                 })}
             </div>
-            <div className=" px-2 fixed bottom-2">
+            <div ref={bottomRef} />
+            <div className=" px-4">
                 <Editor
                     key={editorKey}
                     placeholder="Reply.."
@@ -258,7 +258,7 @@ export const Thread = ({
                 />
             </div>
 
-            <div ref={bottomRef} />
+
         </div>
     );
 };

@@ -12,16 +12,34 @@ import {
 } from "@/components/ui/resizable";
 
 import { usePanel } from "@/hooks/use-panel";
-
 import { useEffect, useState } from "react";
+
 import axios from "axios";
+import { cn } from "@/lib/utils";
 
 const ChannelLayout = ({ children, params }: {
     children: React.ReactNode;
     params: { serverId: string, channelId: string }
 }) => {
     const { parentMessageId, profileMemberId, onClose } = usePanel();
+
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 1280);
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+
     const showPanel = !!parentMessageId || !!profileMemberId;
+
     const channelId = params.channelId;
     const serverId = params.serverId;
 
@@ -45,14 +63,16 @@ const ChannelLayout = ({ children, params }: {
                 direction="horizontal"
                 autoSaveId="ca-workspace-layout"
             >
-                <ResizableHandle withHandle />
-                <ResizablePanel minSize={20} defaultSize={80}>
+                <ResizablePanel minSize={40} defaultSize={80}>
                     {children}
                 </ResizablePanel>
                 {showPanel && (
                     <>
                         <ResizableHandle withHandle />
-                        <ResizablePanel minSize={20} defaultSize={29}>
+                        <ResizablePanel minSize={30} defaultSize={39}
+                            className={cn(
+                                isMobile ? "absolute inset-0 z-50 bg-white dark:bg-[#313338]" : ""
+                            )}>
                             {parentMessageId && member ? (
                                 <Thread
                                     member={member}
