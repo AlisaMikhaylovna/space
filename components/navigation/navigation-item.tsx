@@ -43,7 +43,7 @@ export const NavigationItem = ({
           "relative group flex mx-3 h-[48px] w-[48px] rounded-full items-center justify-center transition-all overflow-hidden",
           params?.serverId === id && "bg-primary/10 text-primary rounded-[16px]"
         )}>
-          <div className="shrink-0 h-[36px] w-[36px] relative overflow-hidden bg-[#616061] text-white font-semibold text-lg rounded-full flex items-center justify-center">
+          <div className="shrink-0 h-[48px] w-[48px] relative overflow-hidden bg-[#616061] text-white font-semibold text-lg rounded-full flex items-center justify-center">
             {name.charAt(0).toUpperCase()}
           </div>
         </div>
