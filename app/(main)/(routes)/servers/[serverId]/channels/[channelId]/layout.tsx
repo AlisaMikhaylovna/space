@@ -69,7 +69,7 @@ const ChannelLayout = ({ children, params }: {
                 {showPanel && (
                     <>
                         <ResizableHandle withHandle />
-                        <ResizablePanel minSize={30} defaultSize={39}
+                        <ResizablePanel minSize={20} defaultSize={39}
                             className={cn(
                                 isMobile ? "absolute inset-0 z-50 bg-white dark:bg-[#313338]" : ""
                             )}>

@@ -20,7 +20,7 @@ export const Navbar = async ({ serverId }: NavbarProps) => {
                     <Link className="transition-colors duration-200" href={`/servers/${serverId}/topics`}>Topic</Link>
                     <Link className="transition-colors duration-200" href={`/servers/${serverId}/blog`}>Article</Link>
                 </div>
-                <div className="flex items-center ml-auto"> {/* Use ml-auto to push it to the right */}
+                <div className="flex items-center ml-auto"> 
                     {user ? (
                         <UserButton user={user} />
                     ) : (
